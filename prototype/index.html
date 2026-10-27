@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>智慧族谱 · H5 交互原型</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%239c3a32'/><text x='16' y='23' font-size='17' text-anchor='middle' fill='white' font-family='serif'>谱</text></svg>">
+<style>
+/*GZ-BODY*/body{ margin:0; background:#e7dfc9; }
+.g-hidden{ display:none !important; }
+#gz-proto{
+  --paper:#f3ebd8; --paper2:#ebe0c6; --card:#fdfaf1; --ink:#2f2a22; --ink2:#5d5545; --ink3:#8d8371;
+  --line:#ddd1b4; --line2:#c8b992;
+  --red:#9c3a32; --red2:#7d2e27; --redbg:#f3e2dd;
+  --blue:#41597a; --bluebg:#e6ebf3;
+  --green:#41694d; --greenbg:#e2ede5;
+  --gold:#8a6a35; --goldbg:#f1e8d2;
+  --fz-xs:12px; --fz-sm:14px; --fz:16.5px; --fz-md:18px; --fz-lg:21px; --fz-xl:25px;
+  --serif:"Noto Serif SC","Source Han Serif SC","Songti SC","STSong","SimSun",serif;
+  --sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;
+  font-size:var(--fz);
+}
+#gz-proto.g-fs1{ --fz-xs:13px; --fz-sm:15.5px; --fz:19px; --fz-md:20.5px; --fz-lg:23px; --fz-xl:28px; }
+#gz-proto.g-fs2{ --fz-xs:14px; --fz-sm:17.5px; --fz:22px; --fz-md:23.5px; --fz-lg:26px; --fz-xl:31px; }
+#gz-proto, #gz-proto *, #gz-proto *::before, #gz-proto *::after{ box-sizing:border-box; margin:0; padding:0; }
+#gz-proto button{ font:inherit; color:inherit; background:none; border:0; }
+#gz-proto img{ display:block; }
+#gz-proto{
+  min-height:100vh; padding:28px 16px 34px; color:var(--ink); line-height:1.6;
+  font-family:var(--sans); -webkit-tap-highlight-color:transparent;
+  background:
+    repeating-linear-gradient(45deg, rgba(140,115,60,.035) 0 2px, transparent 2px 14px),
+    linear-gradient(180deg,#e7dfc9,#ded2b4);
+}
+#gz-proto .g-desk{ max-width:880px; margin:0 auto; }
+#gz-proto .g-caption{ text-align:center; color:var(--ink2); margin-bottom:18px; font-size:14px; line-height:1.8; }
+#gz-proto .g-caption b{ display:block; font-family:var(--serif); font-size:21px; color:var(--ink); letter-spacing:3px; }
+#gz-proto .g-phone{ width:394px; margin:0 auto; background:#241f18; border-radius:54px; padding:12px;
+  box-shadow:0 30px 70px rgba(60,45,20,.38), inset 0 0 0 2px #3b332a; position:relative; }
+#gz-proto .g-screen{ background:var(--paper); border-radius:42px; overflow:hidden; height:812px; display:flex; flex-direction:column; position:relative; }
+#gz-proto .g-status{ height:36px; flex:none; display:flex; align-items:center; justify-content:space-between; padding:2px 24px 0 28px; font-size:13.5px; font-weight:600; }
+#gz-proto .g-sicons{ display:flex; gap:6px; align-items:center; }
+#gz-proto .g-si1{ width:17px; height:10px; background:repeating-linear-gradient(90deg,var(--ink) 0 3px,transparent 3px 5px); border-radius:1px; }
+#gz-proto .g-si2{ width:23px; height:11px; border:1.5px solid var(--ink); border-radius:3.5px; position:relative; }
+#gz-proto .g-si2::after{ content:''; position:absolute; top:1.5px; left:1.5px; bottom:1.5px; width:13px; background:var(--ink); border-radius:1.5px; }
+#gz-proto .g-head{ flex:none; display:flex; align-items:center; gap:2px; min-height:52px; padding:0 10px; position:relative; z-index:20;
+  background:rgba(243,235,216,.92); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); border-bottom:1px solid var(--line); }
+#gz-proto .g-hback{ display:flex; align-items:center; gap:1px; font-size:15px; color:var(--ink2); padding:9px 8px 9px 4px; border-radius:10px; min-width:66px; cursor:pointer; }
+#gz-proto .g-hback:active{ background:var(--paper2); }
+#gz-proto .g-htitle{ position:absolute; left:50%; transform:translateX(-50%); font-family:var(--serif); font-size:18px; font-weight:700; letter-spacing:2.5px; max-width:54%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#gz-proto .g-hright{ margin-left:auto; min-width:66px; display:flex; justify-content:flex-end; gap:6px; }
+#gz-proto .g-hrbtn{ display:flex; align-items:center; gap:5px; font-size:14px; color:var(--ink2); border:1px solid var(--line2); background:var(--card); border-radius:999px; padding:7px 13px; cursor:pointer; }
+#gz-proto .g-hrbtn:active{ background:var(--paper2); }
+#gz-proto .g-body{ flex:1; overflow-y:auto; overscroll-behavior:contain; position:relative; scrollbar-width:none; }
+#gz-proto .g-body::-webkit-scrollbar{ display:none; }
+#gz-proto .g-pad{ padding:16px 16px 26px; }
+#gz-proto .g-pad-s{ padding:14px; }
+#gz-proto .g-tabs{ flex:none; display:flex; background:var(--card); border-top:1px solid var(--line); padding:6px 6px 10px; gap:2px; }
+#gz-proto .g-tab{ flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; font-size:11.5px; color:var(--ink3); padding:6px 0 3px; border-radius:12px; position:relative; cursor:pointer; }
+#gz-proto .g-tab.g-on{ color:var(--red); font-weight:600; }
+#gz-proto .g-badge{ position:absolute; top:2px; right:calc(50% - 22px); min-width:16px; height:16px; border-radius:8px; background:var(--red); color:#fff; font-size:10.5px; line-height:16px; padding:0 4px; font-weight:600; font-style:normal; }
+#gz-proto .g-hidden{ display:none !important; }
+
+#gz-proto /* ---- 通用组件 ---- */
+.g-btn{ display:flex; align-items:center; justify-content:center; gap:8px; width:100%; min-height:50px; border-radius:14px;
+  background:var(--red); color:#fff; font-size:17px; font-weight:600; letter-spacing:1.5px; padding:10px 16px; cursor:pointer;
+  transition:transform .08s, filter .15s; }
+#gz-proto .g-btn:active{ transform:scale(.97); filter:brightness(1.08); }
+#gz-proto .g-btn.g-line{ background:var(--card); color:var(--ink); border:1.5px solid var(--line2); font-weight:500; }
+#gz-proto .g-btn.g-green{ background:var(--green); }
+#gz-proto .g-btn.g-ghost{ background:transparent; color:var(--ink2); border:1.5px solid var(--line2); font-weight:500; }
+#gz-proto .g-btn.g-danger-line{ background:var(--card); color:#a8402f; border:1.5px solid #cf9184; font-weight:500; }
+#gz-proto .g-card{ background:var(--card); border:1px solid var(--line); border-radius:16px; box-shadow:0 1px 0 rgba(120,100,60,.06); }
+#gz-proto .g-sec{ margin:24px 2px 10px; display:flex; align-items:center; gap:8px; font-family:var(--serif); font-size:var(--fz-md); font-weight:700; letter-spacing:1.5px; }
+#gz-proto .g-sec::before{ content:''; width:4px; height:17px; border-radius:2px; background:var(--red); flex:none; }
+#gz-proto .g-sec .g-secx{ margin-left:auto; font-family:var(--sans); font-size:var(--fz-xs); color:var(--ink3); font-weight:400; letter-spacing:0; }
+#gz-proto .g-intro{ font-size:var(--fz-sm); color:var(--ink3); line-height:1.7; margin-bottom:16px; }
+#gz-proto .g-hint{ font-size:13.5px; color:var(--ink3); margin-top:8px; line-height:1.6; }
+#gz-proto .g-footnote{ text-align:center; font-size:12px; color:var(--ink3); margin-top:24px; line-height:1.7; }
+#gz-proto .g-empty{ text-align:center; color:var(--ink3); padding:34px 0; font-size:15px; }
+#gz-proto .g-chip{ display:inline-flex; align-items:center; gap:4px; background:var(--paper2); border:1px solid var(--line); color:var(--ink2);
+  border-radius:999px; padding:5px 12px; font-size:var(--fz-sm); cursor:pointer; }
+#gz-proto .g-chip.g-chipred{ background:var(--redbg); border-color:#dcb5aa; color:var(--red2); }
+#gz-proto .g-minichip{ display:inline-flex; font-size:12px; padding:3px 9px; border-radius:999px; background:var(--paper2); color:var(--ink2); border:1px solid var(--line); }
+#gz-proto .g-minichip.g-pend{ background:var(--goldbg); color:var(--gold); border-color:#d9c48f; }
+#gz-proto .g-minichip.g-okchip{ background:var(--greenbg); color:var(--green); border-color:#b9d2c0; }
+#gz-proto .g-minichip.g-nochip{ background:#f2e0dc; color:#a8402f; border-color:#dcb5aa; }
+
+#gz-proto .g-field{ margin-bottom:14px; }
+#gz-proto .g-flabel{ display:block; font-size:var(--fz-sm); color:var(--ink2); margin-bottom:6px; font-weight:500; }
+#gz-proto .g-flabel em{ color:#a8402f; font-style:normal; }
+#gz-proto .g-input,#gz-proto .g-select,#gz-proto .g-textarea{ width:100%; background:#fff; border:1.5px solid var(--line2); border-radius:12px; min-height:48px;
+  padding:11px 14px; font-size:16.5px; font-family:inherit; color:var(--ink); -webkit-appearance:none; appearance:none; }
+#gz-proto .g-textarea{ min-height:112px; line-height:1.6; resize:none; }
+#gz-proto .g-select{ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238d8371' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 13px center; padding-right:38px; }
+#gz-proto .g-input:focus,#gz-proto .g-select:focus,#gz-proto .g-textarea:focus{ outline:none; border-color:var(--red); box-shadow:0 0 0 3px rgba(156,58,50,.13); }
+#gz-proto .g-input::placeholder,#gz-proto .g-textarea::placeholder{ color:#b5ac99; }
+#gz-proto .g-err{ color:#a8402f; font-size:13.5px; margin-top:5px; display:none; }
+#gz-proto .g-field.g-invalid .g-input,#gz-proto .g-field.g-invalid .g-textarea{ border-color:#c04a35; }
+#gz-proto .g-field.g-invalid .g-err{ display:block; }
+#gz-proto .g-2col{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+#gz-proto .g-steps{ display:flex; align-items:center; gap:6px; margin:2px 0 14px; }
+#gz-proto .g-dot{ width:26px; height:6px; border-radius:3px; background:var(--line2); }
+#gz-proto .g-dot.g-on{ background:var(--red); }
+#gz-proto .g-steplabel{ margin-left:6px; font-size:13px; color:var(--ink3); }
+#gz-proto .g-steptitle{ font-family:var(--serif); font-size:var(--fz-lg); font-weight:700; margin-bottom:12px; letter-spacing:2px; }
+
+#gz-proto .g-rcards{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+#gz-proto .g-rcard{ display:flex; flex-direction:column; align-items:center; gap:3px; background:#fff; border:1.5px solid var(--line2);
+  border-radius:14px; padding:13px 6px; text-align:center; cursor:pointer; }
+#gz-proto .g-rcard input{ position:absolute; opacity:0; pointer-events:none; }
+#gz-proto .g-rcard .g-rcname{ font-weight:600; font-size:15.5px; }
+#gz-proto .g-rcard .g-rcsub{ font-size:12px; color:var(--ink3); line-height:1.4; }
+#gz-proto .g-rcard.g-on{ border-color:var(--red); background:var(--redbg); box-shadow:0 0 0 1px var(--red); }
+#gz-proto .g-check{ display:flex; align-items:center; gap:11px; padding:11px 13px; background:#fff; border:1.5px solid var(--line2);
+  border-radius:12px; margin-bottom:8px; cursor:pointer; }
+#gz-proto .g-check input{ width:21px; height:21px; accent-color:var(--red); flex:none; }
+#gz-proto .g-check b{ font-family:var(--serif); font-size:16.5px; }
+#gz-proto .g-check span{ display:block; font-size:12.5px; color:var(--ink3); }
+#gz-proto .g-check.g-on{ border-color:var(--red); background:var(--redbg); }
+
+#gz-proto .g-stats{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+#gz-proto .g-stat{ background:var(--card); border:1px solid var(--line); border-radius:14px; text-align:center; padding:13px 4px 11px; }
+#gz-proto .g-stat b{ display:block; font-size:22px; font-family:var(--serif); color:var(--red2); line-height:1.3; }
+#gz-proto .g-stat span{ font-size:12px; color:var(--ink3); }
+
+#gz-proto .g-row{ display:flex; align-items:center; gap:12px; padding:13px 14px; background:var(--card); border:1px solid var(--line);
+  border-radius:14px; margin-bottom:10px; cursor:pointer; }
+#gz-proto .g-row:active{ background:var(--redbg); }
+#gz-proto .g-avatar{ width:46px; height:46px; border-radius:50%; background:var(--redbg); color:var(--red2); font-family:var(--serif);
+  font-size:18px; font-weight:600; display:grid; place-items:center; flex:none; border:1px solid #dcb5aa; }
+#gz-proto .g-avatar.g-avatar-lg{ width:60px; height:60px; font-size:23px; }
+#gz-proto .g-avsq{ border-radius:13px; }
+#gz-proto .g-av-blue{ background:var(--bluebg); color:var(--blue); border-color:#b9c6da; }
+#gz-proto .g-av-green{ background:var(--greenbg); color:var(--green); border-color:#b9d2c0; }
+#gz-proto .g-av-gold{ background:var(--goldbg); color:var(--gold); border-color:#d9c48f; }
+#gz-proto .g-rowmain{ flex:1; min-width:0; }
+#gz-proto .g-rowmain b{ font-size:17px; font-family:var(--serif); }
+#gz-proto .g-rowmain .g-sub{ font-size:13px; color:var(--ink3); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#gz-proto .g-rowr{ color:var(--ink3); flex:none; display:flex; align-items:center; gap:7px; font-size:13px; }
+#gz-proto .g-chev{ display:flex; color:var(--ink3); }
+#gz-proto .g-listtop{ display:flex; gap:10px; margin-bottom:14px; align-items:center; }
+#gz-proto .g-listtop .g-searchinput{ flex:1; }
+
+#gz-proto .g-searchbar{ display:flex; align-items:center; gap:10px; padding:13px 16px; background:#fff; border:1.5px solid var(--line2);
+  border-radius:999px; color:var(--ink3); font-size:15.5px; margin:16px 0 18px; cursor:pointer; }
+#gz-proto .g-searchinput{ display:flex; align-items:center; gap:9px; padding:11px 15px; background:#fff; border:1.5px solid var(--line2);
+  border-radius:999px; color:var(--ink3); }
+#gz-proto .g-searchinput input{ border:0; outline:none; background:none; font:inherit; font-size:15.5px; color:var(--ink); width:100%; }
+
+#gz-proto /* ---- 首页 ---- */
+.g-hero{ position:relative; text-align:center; padding:26px 18px 22px; border:1.5px solid var(--line2); border-radius:18px;
+  background:linear-gradient(160deg,#f9f4e6,#f0e5cb); overflow:hidden; }
+#gz-proto .g-hero::before,#gz-proto .g-hero::after{ content:''; position:absolute; width:15px; height:15px; border:2px solid var(--red); opacity:.5; }
+#gz-proto .g-hero::before{ top:9px; left:9px; border-right:0; border-bottom:0; }
+#gz-proto .g-hero::after{ bottom:9px; right:9px; border-left:0; border-top:0; }
+#gz-proto .g-hero h1{ font-family:var(--serif); font-size:27px; letter-spacing:5px; margin:13px 0 4px; color:var(--ink); }
+#gz-proto .g-herosub{ font-size:13.5px; color:var(--ink3); letter-spacing:2.5px; }
+#gz-proto .g-herorow{ display:flex; justify-content:center; gap:8px; margin-top:15px; flex-wrap:wrap; }
+#gz-proto .g-seal{ background:var(--red); color:#fff; font-family:var(--serif); border-radius:10px; display:grid; place-items:center;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.5), inset 0 0 0 4.5px var(--red); line-height:1.25; text-align:center;
+  letter-spacing:2px; font-weight:600; margin:0 auto; }
+#gz-proto .g-seal-sm{ width:46px; height:46px; font-size:14px; flex:none; }
+#gz-proto .g-egrid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+#gz-proto .g-entry{ display:flex; align-items:center; gap:12px; padding:14px 13px; background:var(--card); border:1px solid var(--line);
+  border-radius:16px; cursor:pointer; text-align:left; }
+#gz-proto .g-entry:active{ background:var(--redbg); }
+#gz-proto .g-eicon{ width:44px; height:44px; border-radius:13px; background:var(--redbg); color:var(--red); display:grid; place-items:center; flex:none; }
+#gz-proto .g-entry b{ display:block; font-size:16.5px; letter-spacing:.5px; }
+#gz-proto .g-entry span{ font-size:12.5px; color:var(--ink3); }
+#gz-proto .g-nrow{ display:flex; gap:10px; padding:11px 14px; border-top:1px solid var(--line); align-items:flex-start; }
+#gz-proto .g-nrow:first-child{ border-top:0; }
+#gz-proto .g-ndot{ color:var(--red); font-weight:700; flex:none; }
+#gz-proto .g-nrow p{ flex:1; font-size:14.5px; line-height:1.6; color:var(--ink2); }
+#gz-proto .g-ndate{ flex:none; font-size:12px; color:var(--ink3); padding-top:3px; }
+
+#gz-proto /* ---- 族人详情 ---- */
+.g-mcard{ padding:16px; }
+#gz-proto .g-mctop{ display:flex; gap:14px; align-items:center; }
+#gz-proto .g-mcinfo h2{ font-family:var(--serif); font-size:25px; letter-spacing:3px; }
+#gz-proto .g-mchips{ display:flex; gap:6px; margin-top:9px; flex-wrap:wrap; }
+#gz-proto .g-kvs{ display:grid; grid-template-columns:1fr 1fr; gap:12px 14px; margin-top:16px; }
+#gz-proto .g-kv span{ display:block; font-size:12.5px; color:var(--ink3); margin-bottom:1px; }
+#gz-proto .g-kv b{ font-size:15px; font-weight:500; }
+#gz-proto .g-relcard{ overflow:hidden; }
+#gz-proto .g-relrow{ display:flex; gap:12px; padding:13px 14px; border-top:1px solid var(--line); align-items:flex-start; }
+#gz-proto .g-relrow:first-child{ border-top:0; }
+#gz-proto .g-relk{ flex:none; font-size:14px; color:var(--ink3); padding-top:5px; min-width:34px; }
+#gz-proto .g-relv{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+#gz-proto .g-relv b{ font-size:16px; font-family:var(--serif); }
+#gz-proto .g-bio{ padding:14px 16px; font-size:15.5px; line-height:1.85; color:var(--ink2); text-align:justify; }
+#gz-proto .g-thumbs{ display:flex; gap:11px; overflow-x:auto; padding:3px 2px 8px; scrollbar-width:none; }
+#gz-proto .g-thumbs::-webkit-scrollbar{ display:none; }
+#gz-proto .g-thumb{ flex:none; width:74px; cursor:pointer; text-align:center; }
+#gz-proto .g-thumbpaper{ width:74px; height:100px; background:linear-gradient(150deg,#f8f1df,#eee2c5); border:1px solid var(--line2);
+  border-radius:6px; position:relative; overflow:hidden; box-shadow:0 2px 6px rgba(90,70,30,.13);
+  background-image:repeating-linear-gradient(90deg,transparent 0 11px, rgba(90,80,60,.22) 11px 12px); background-position:8px 0; }
+#gz-proto .g-thl{ position:absolute; left:9px; top:10px; bottom:10px; width:2.5px; background:var(--red); opacity:.8; border-radius:1px; }
+#gz-proto .g-thside{ position:absolute; right:5px; top:7px; bottom:7px; width:3px;
+  background-image:radial-gradient(circle,#a8442e 1px,transparent 1.4px); background-size:3px 7px; }
+#gz-proto .g-thumb span{ display:block; font-size:11.5px; color:var(--ink2); margin-top:5px; line-height:1.35; }
+#gz-proto .g-thumb:active .g-thumbpaper{ border-color:var(--red); }
+#gz-proto .g-src{ font-size:12px; color:var(--ink3); margin-top:12px; line-height:1.7; }
+#gz-proto .g-stickyfoot{ position:sticky; bottom:0; padding:14px 0 4px; margin-top:18px;
+  background:linear-gradient(transparent,var(--paper) 32%); }
+#gz-proto .g-tcard{ display:flex; align-items:center; gap:10px; padding:12px 14px; }
+#gz-proto .g-tcard b{ font-family:var(--serif); font-size:18px; }
+
+#gz-proto /* ---- 原谱目录 / 管理 ---- */
+.g-vol{ padding:14px; margin-bottom:12px; cursor:pointer; }
+#gz-proto .g-vol:active{ background:var(--redbg); }
+#gz-proto .g-voltop{ display:flex; gap:12px; align-items:center; }
+#gz-proto .g-volinfo{ flex:1; min-width:0; }
+#gz-proto .g-volinfo b{ font-family:var(--serif); font-size:17.5px; letter-spacing:1px; }
+#gz-proto .g-volinfo span{ display:block; font-size:13px; color:var(--ink3); margin-top:2px; }
+#gz-proto .g-dots{ display:flex; gap:5px; margin-top:13px; }
+#gz-proto .g-dots i{ flex:1; height:7px; border-radius:4px; background:var(--line2); }
+#gz-proto .g-dots i.g-on{ background:var(--green); }
+#gz-proto .g-pgrid{ display:grid; grid-template-columns:repeat(4,1fr); gap:9px; }
+#gz-proto .g-pcell{ aspect-ratio:1; border-radius:12px; border:1.5px solid var(--line2); background:#fff; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:1px; cursor:pointer; }
+#gz-proto .g-pcell b{ font-family:var(--serif); font-size:17px; }
+#gz-proto .g-pcell span{ font-size:11px; color:var(--ink3); }
+#gz-proto .g-pcell.g-on{ border-color:#9dbfa7; background:var(--greenbg); }
+#gz-proto .g-pcell.g-on b{ color:var(--green); }
+#gz-proto .g-pcell:active{ border-color:var(--red); }
+
+#gz-proto /* ---- 翻书阅览 ---- */
+.g-reader{ padding:10px 14px 24px; }
+#gz-proto .g-bookwrap{ display:flex; justify-content:center; }
+#gz-proto .g-book{ position:relative; width:320px; height:446px; perspective:1500px; cursor:pointer; touch-action:pan-y; }
+#gz-proto .g-pageabs{ position:absolute; inset:0; border-radius:4px 10px 10px 4px; }
+#gz-proto .g-flip{ position:absolute; inset:0; z-index:9; transform-origin:left center; will-change:transform,opacity; pointer-events:none; }
+#gz-proto .g-simpage{ position:absolute; inset:0; background:linear-gradient(155deg,#f7efdc,#ecdfc0); border-radius:4px 10px 10px 4px;
+  box-shadow:inset 0 0 26px rgba(120,95,45,.15), inset -16px 0 20px -16px rgba(80,60,20,.4);
+  border:1px solid #d8c8a2; overflow:hidden; }
+#gz-proto .g-simframe{ position:absolute; inset:11px 15px 11px 18px; border:2px solid #6e6049; outline:1px solid #6e6049; outline-offset:2.5px; pointer-events:none; opacity:.75; }
+#gz-proto .g-stitch{ position:absolute; right:16px; top:22px; bottom:22px; width:4px;
+  background-image:radial-gradient(circle at 2px 4px,#a8442e 1.5px,transparent 2.1px); background-size:4px 13px; opacity:.85; }
+#gz-proto .g-simbody{ position:absolute; inset:26px 34px 42px 28px; writing-mode:vertical-rl; font-family:var(--serif);
+  font-size:14px; line-height:1.95; letter-spacing:2px; color:#4a4234; overflow:hidden; }
+#gz-proto .g-ptitle{ font-size:19px; font-weight:700; letter-spacing:7px; margin-block-end:12px; color:#33291b; }
+#gz-proto .g-simbody > div{ margin-block-end:10px; }
+#gz-proto .g-lk{ color:var(--red2); font-weight:600; background:linear-gradient(transparent 60%,rgba(156,58,50,.2) 0);
+  padding:0; cursor:pointer; font:inherit; letter-spacing:inherit; }
+#gz-proto .g-simfoot{ position:absolute; bottom:12px; left:0; right:0; text-align:center; font-size:10.5px; color:#8a7c5e;
+  font-family:var(--serif); letter-spacing:3px; }
+#gz-proto .g-pageind{ text-align:center; font-size:13.5px; color:var(--ink3); margin-top:12px; }
+#gz-proto .g-linkrow{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:13px; padding:0 2px; }
+#gz-proto .g-linklab{ font-size:13px; color:var(--ink3); }
+#gz-proto .g-linkrow.g-none{ color:var(--ink3); font-size:13.5px; }
+#gz-proto .g-linkgo{ color:var(--red2); font-weight:600; text-decoration:underline; cursor:pointer; font-size:13.5px; padding:0; }
+#gz-proto .g-pager{ display:flex; gap:10px; margin-top:14px; }
+#gz-proto .g-pager .g-btn{ flex:1; }
+#gz-proto .g-fliphint{ text-align:center; font-size:12px; color:var(--ink3); margin-top:10px; }
+
+#gz-proto /* ---- 目录抽屉 ---- */
+#gz-toc{ position:absolute; inset:0; z-index:340; display:none; }
+#gz-proto #gz-toc.g-show{ display:block; }
+#gz-proto .g-tocbg{ position:absolute; inset:0; background:rgba(35,29,20,.5); animation:gfade .2s; }
+#gz-proto .g-tocp{ position:absolute; top:0; right:0; bottom:0; width:80%; background:var(--card); border-left:1px solid var(--line);
+  padding:16px 14px 20px; overflow-y:auto; animation:gin .25s; }
+@keyframes gin{ from{ transform:translateX(50px); opacity:.4; } }
+@keyframes gfade{ from{ opacity:0; } }
+#gz-proto .g-tocv{ font-family:var(--serif); font-weight:700; margin:14px 2px 8px; font-size:16px; letter-spacing:1px; }
+#gz-proto .g-tocp-item{ display:flex; align-items:center; gap:9px; padding:10px 9px; border-radius:10px; cursor:pointer; font-size:14.5px; }
+#gz-proto .g-tocp-item:active{ background:var(--redbg); }
+#gz-proto .g-tocp-item.g-cur{ background:var(--redbg); }
+#gz-proto .g-tdot{ width:8px; height:8px; border-radius:50%; background:var(--line2); flex:none; }
+#gz-proto .g-tdot.g-on{ background:var(--green); }
+#gz-proto .g-tdot.g-cur{ outline:2px solid rgba(156,58,50,.45); outline-offset:1.5px; }
+#gz-proto .g-toct{ flex:1; }
+#gz-proto .g-tocn{ font-size:12px; color:var(--ink3); }
+
+#gz-proto /* ---- 世系图 ---- */
+.g-treezoom{ display:flex; align-items:center; gap:8px; padding:0 2px 12px; }
+#gz-proto .g-zbtn{ width:42px; height:42px; border-radius:12px; background:var(--card); border:1px solid var(--line2);
+  display:grid; place-items:center; color:var(--ink2); font-size:20px; cursor:pointer; }
+#gz-proto .g-zbtn:active{ background:var(--paper2); }
+#gz-proto .g-treewrap{ overflow:auto; padding:4px 2px 10px; }
+#gz-proto .g-tree{ transform-origin:top center; transition:transform .2s; display:inline-block; min-width:100%; }
+#gz-proto .g-tree ul{ display:flex; justify-content:center; padding-top:18px; position:relative; list-style:none; }
+#gz-proto .g-tree > ul{ padding-top:0; }
+#gz-proto .g-tree ul ul::before{ content:''; position:absolute; top:0; left:50%; width:0; height:18px; border-left:2px solid var(--line2); }
+#gz-proto .g-tree li{ display:flex; flex-direction:column; align-items:center; position:relative; padding:18px 4px 0; }
+#gz-proto .g-tree > ul > li{ padding-top:0; }
+#gz-proto .g-tree > ul > li::before,#gz-proto .g-tree > ul > li::after{ display:none; }
+#gz-proto .g-tree li::before,#gz-proto .g-tree li::after{ content:''; position:absolute; top:0; right:50%; width:50%; height:18px; border-top:2px solid var(--line2); }
+#gz-proto .g-tree li::after{ right:auto; left:50%; border-left:2px solid var(--line2); }
+#gz-proto .g-tree li:only-child::before,#gz-proto .g-tree li:only-child::after{ display:none; }
+#gz-proto .g-tree li:first-child::before,#gz-proto .g-tree li:last-child::after{ border:0 none; }
+#gz-proto .g-tree li:last-child::before{ border-right:2px solid var(--line2); border-radius:0 3px 0 0; }
+#gz-proto .g-tree li:first-child::after{ border-radius:3px 0 0 0; }
+#gz-proto .g-tnode{ width:98px; background:var(--card); border:1.5px solid var(--line2); border-radius:14px; padding:9px 6px 8px;
+  text-align:center; cursor:pointer; box-shadow:0 2px 6px rgba(90,70,30,.09); }
+#gz-proto .g-tnode:active{ border-color:var(--red); background:var(--redbg); }
+#gz-proto .g-tnode b{ display:block; font-family:var(--serif); font-size:17px; letter-spacing:1px; }
+#gz-proto .g-tsub{ display:block; font-size:11.5px; color:var(--ink3); margin-top:1px; }
+#gz-proto .g-tsp{ display:block; font-size:11px; color:var(--gold); margin-top:3px; }
+#gz-proto .g-tbadge{ display:block; width:fit-content; margin:0 auto 4px; font-size:10.5px; color:#fff; background:var(--gold);
+  border-radius:999px; padding:1px 8px; letter-spacing:1px; }
+
+#gz-proto /* ---- 拍照录入 ---- */
+.g-camera{ border:2px dashed var(--line2); border-radius:18px; background:#fff; min-height:236px; display:flex;
+  flex-direction:column; align-items:center; justify-content:center; gap:10px; cursor:pointer; overflow:hidden;
+  position:relative; color:var(--ink3); text-align:center; padding:16px; }
+#gz-proto .g-camera b{ font-size:17px; color:var(--ink2); }
+#gz-proto .g-camera > span{ font-size:13.5px; }
+#gz-proto .g-camera img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+#gz-proto .g-tips{ display:flex; gap:9px; background:var(--goldbg); border:1px solid #d9c48f; color:#6d5526; border-radius:12px;
+  padding:11px 13px; font-size:13.5px; line-height:1.6; align-items:flex-start; margin-top:14px; }
+#gz-proto .g-tips svg{ flex:none; margin-top:2px; }
+#gz-proto .g-ocr{ display:flex; align-items:flex-start; gap:8px; background:var(--bluebg); border:1px solid #b9c6da; color:var(--blue);
+  border-radius:12px; padding:10px 13px; font-size:14px; margin-bottom:14px; line-height:1.55; }
+#gz-proto .g-ocr svg{ flex:none; margin-top:2px; }
+#gz-proto .g-stepper{ display:flex; align-items:center; gap:12px; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:10px 12px; }
+#gz-proto .g-stp{ width:46px; height:46px; border-radius:12px; background:var(--paper2); border:1px solid var(--line2);
+  font-size:23px; color:var(--ink2); cursor:pointer; flex:none; }
+#gz-proto .g-stp:active{ background:var(--redbg); }
+#gz-proto .g-stpv{ flex:1; text-align:center; }
+#gz-proto .g-stpv b{ font-size:24px; font-family:var(--serif); }
+#gz-proto .g-stpv span{ display:block; font-size:12.5px; color:var(--ink3); }
+#gz-proto .g-evgrid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+#gz-proto .g-evslot{ aspect-ratio:1; border:2px dashed var(--line2); border-radius:14px; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:6px; color:var(--ink3); cursor:pointer; background:#fff; font-size:13px;
+  overflow:hidden; position:relative; }
+#gz-proto .g-evslot img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+#gz-proto .g-evslot.g-static{ border-style:solid; cursor:default; }
+#gz-proto .g-sumbox .g-sumrow{ display:flex; gap:12px; padding:9px 2px; border-top:1px solid var(--line); font-size:15px; }
+#gz-proto .g-sumbox .g-sumrow:first-child{ border-top:0; }
+#gz-proto .g-sumrow span{ flex:none; color:var(--ink3); font-size:14px; padding-top:1px; }
+#gz-proto .g-sumrow b{ font-weight:500; }
+
+#gz-proto /* ---- 登录 / 工作台 ---- */
+.g-login{ max-width:330px; margin:0 auto; }
+#gz-proto .g-lgt{ text-align:center; font-family:var(--serif); font-size:20px; letter-spacing:2px; margin-top:6px; }
+#gz-proto .g-lgs{ text-align:center; font-size:13px; color:var(--ink3); margin:7px 0 20px; line-height:1.6; }
+#gz-proto .g-greet b{ display:block; font-family:var(--serif); font-size:21px; letter-spacing:1px; }
+#gz-proto .g-greet span{ display:block; font-size:13px; color:var(--ink3); margin-top:3px; }
+#gz-proto .g-alert{ display:flex; gap:10px; align-items:center; background:var(--redbg); border:1px solid #dcb5aa; color:var(--red2);
+  border-radius:14px; padding:13px 15px; cursor:pointer; font-size:15.5px; margin-top:16px; }
+#gz-proto .g-alert b{ flex:1; font-weight:600; }
+#gz-proto .g-alert.g-okalert{ background:var(--greenbg); border-color:#b9d2c0; color:var(--green); cursor:default; }
+#gz-proto .g-fsrow{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+#gz-proto .g-fsrow b{ display:block; font-size:16px; }
+#gz-proto .g-fsrow > div:first-child span{ display:block; font-size:12.5px; color:var(--ink3); margin-top:1px; }
+#gz-proto .g-seg{ display:flex; background:var(--paper2); border-radius:11px; padding:3px; gap:2px; flex:none; }
+#gz-proto .g-seg-i{ padding:8px 13px; border-radius:9px; font-size:14px; color:var(--ink2); cursor:pointer; white-space:nowrap; }
+#gz-proto .g-seg-i.g-on{ background:var(--card); color:var(--red2); font-weight:600; box-shadow:0 1px 4px rgba(80,60,20,.16); }
+
+#gz-proto /* ---- 审核 ---- */
+.g-diffhead{ font-size:12.5px; color:var(--ink3); margin:6px 2px 8px; }
+#gz-proto .g-diff{ border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--card); }
+#gz-proto .g-diffr{ display:grid; grid-template-columns:78px 1fr 1fr; }
+#gz-proto .g-diffr > div{ padding:12px 11px; font-size:14.5px; line-height:1.55; border-top:1px solid var(--line); }
+#gz-proto .g-diffr:first-child > div{ border-top:0; }
+#gz-proto .g-dfk{ background:var(--paper2); color:var(--ink2); font-weight:600; font-size:13.5px !important; }
+#gz-proto .g-dfold{ color:var(--ink3); background:#faf6ea; }
+#gz-proto .g-dfnew{ color:var(--green); background:var(--greenbg); font-weight:500; }
+#gz-proto .g-result{ padding:13px 15px; font-size:15px; border-radius:14px; }
+#gz-proto .g-result-ok{ background:var(--greenbg); color:var(--green); border:1px solid #b9d2c0; }
+#gz-proto .g-result-no{ background:#f2e0dc; color:#a8402f; border:1px solid #dcb5aa; }
+#gz-proto .g-evcard{ display:flex; gap:10px; align-items:center; background:var(--card); border:1px solid var(--line);
+  border-radius:14px; padding:12px 14px; font-size:14.5px; color:var(--ink2); }
+#gz-proto .g-evcard svg{ color:var(--ink3); flex:none; }
+#gz-proto .g-applicant{ display:flex; gap:11px; align-items:center; padding:12px 14px; }
+#gz-proto .g-applicant b{ display:block; font-size:15px; }
+#gz-proto .g-applicant span{ display:block; font-size:12.5px; color:var(--ink3); }
+
+#gz-proto /* ---- 弹层 / 提醒 ---- */
+#gz-toast{ position:absolute; top:62px; left:50%; transform:translateX(-50%) translateY(-10px);
+  background:rgba(43,38,30,.93); color:#fff; padding:11px 19px; border-radius:12px; font-size:15px; z-index:400;
+  opacity:0; pointer-events:none; transition:all .25s; max-width:84%; display:flex; gap:8px; align-items:center; }
+#gz-proto #gz-toast.g-show{ opacity:1; transform:translateX(-50%) translateY(0); }
+#gz-proto #gz-toast.g-warn{ background:rgba(125,46,39,.95); }
+#gz-proto #gz-sheet,#gz-proto #gz-msheet{ position:absolute; inset:0; z-index:350; display:none; }
+#gz-proto #gz-sheet.g-show{ display:block; }
+#gz-proto .g-mbg{ position:absolute; inset:0; background:rgba(35,29,20,.52); animation:gfade .2s; }
+#gz-proto .g-mpanel{ position:absolute; left:0; right:0; bottom:0; background:var(--card); border-radius:20px 20px 0 0;
+  padding:18px 18px 22px; max-height:80%; overflow-y:auto; animation:gup .25s; }
+@keyframes gup{ from{ transform:translateY(40px); opacity:.5; } }
+#gz-proto .g-shtitle{ font-family:var(--serif); font-size:18.5px; font-weight:700; margin-bottom:10px; letter-spacing:1px;
+  display:flex; align-items:center; justify-content:space-between; }
+#gz-proto .g-shx{ color:var(--ink3); padding:6px; cursor:pointer; margin:-6px; }
+#gz-proto .g-shbody{ font-size:15.5px; color:var(--ink2); line-height:1.7; }
+#gz-proto .g-shbody .g-textarea{ margin-top:10px; }
+#gz-proto .g-shacts{ display:flex; flex-direction:column; gap:10px; margin-top:18px; }
+#gz-proto .g-shtext{ margin-bottom:6px; }
+
+#gz-proto /* ---- 完成页 ---- */
+.g-done{ text-align:center; padding:44px 22px 20px; }
+#gz-proto .g-doneseal{ width:86px; height:86px; border-radius:50%; background:var(--green); color:#fff; display:grid; place-items:center;
+  margin:0 auto 18px; box-shadow:0 10px 26px rgba(65,105,77,.35); animation:gpop .45s; }
+@keyframes gpop{ from{ transform:scale(.5); opacity:0; } }
+#gz-proto .g-done h2{ font-family:var(--serif); font-size:23px; margin-bottom:10px; letter-spacing:2px; }
+#gz-proto .g-done p{ color:var(--ink2); font-size:15px; line-height:1.75; margin-bottom:22px; }
+
+#gz-proto /* ---- 原型导航 ---- */
+#gz-fab{ position:absolute; right:12px; bottom:88px; z-index:420; background:#2f2a22; color:#f3ebd8; border-radius:999px;
+  padding:10px 16px; font-size:13px; letter-spacing:1.5px; box-shadow:0 6px 18px rgba(0,0,0,.32); cursor:pointer;
+  display:flex; gap:6px; align-items:center; }
+#gz-proto #gz-nav{ position:absolute; right:10px; bottom:134px; z-index:421; width:236px; max-height:68%; overflow-y:auto;
+  background:#2f2a22; color:#efe6d0; border-radius:16px; padding:12px 12px 14px; display:none;
+  box-shadow:0 14px 36px rgba(0,0,0,.38); font-size:13.5px; }
+#gz-proto #gz-nav.g-show{ display:block; }
+#gz-proto .g-nv-t{ color:#b7ab8e; font-size:11.5px; margin:10px 2px 4px; letter-spacing:2px; }
+#gz-proto .g-nv-t:first-child{ margin-top:0; }
+#gz-proto .g-nv-i{ display:block; width:100%; text-align:left; padding:8px 10px; border-radius:9px; color:#efe6d0; cursor:pointer; font-size:13.5px; }
+#gz-proto .g-nv-i:active,#gz-proto .g-nv-i:hover{ background:rgba(255,255,255,.09); }
+#gz-proto .g-nv-i.g-cur{ color:#ffb9a6; font-weight:600; }
+#gz-proto .g-nv-row{ display:flex; gap:6px; margin-top:6px; }
+#gz-proto .g-nv-btn{ flex:1; background:rgba(255,255,255,.1); border-radius:9px; padding:8px 0; text-align:center; cursor:pointer; color:#efe6d0; font-size:12.5px; }
+#gz-proto .g-nv-btn:active{ background:rgba(255,255,255,.2); }
+
+@media (max-width:520px){
+  #gz-proto{ padding:0; background:var(--paper); }
+  #gz-proto .g-desk{ max-width:none; }
+  #gz-proto .g-caption{ display:none; }
+  #gz-proto .g-phone{ width:100%; border-radius:0; padding:0; box-shadow:none; }
+  #gz-proto .g-screen{ border-radius:0; height:100dvh; }
+  #gz-proto #gz-fab{ bottom:calc(92px + env(safe-area-inset-bottom)); }
+  #gz-proto #gz-nav{ bottom:calc(140px + env(safe-area-inset-bottom)); }
+}
+@media (prefers-reduced-motion: reduce){
+  #gz-proto *, #gz-proto *::before, #gz-proto *::after{ animation:none !important; transition:none !important; }
+}
+</style>
+</head>
+<body>
+<div id="gz-proto">
+  <div class="g-desk">
+    <div class="g-caption">
+      <b>智慧族谱 · H5 交互原型</b>
+      访客端与管理端共 15 屏，可点击体验完整流程；右下角「页面」按钮可快速跳转与切换视角
+    </div>
+    <div class="g-phone">
+      <div class="g-screen" id="gz-app">
+        <div class="g-status">
+          <span id="gz-clock">9:41</span>
+          <span class="g-sicons"><i class="g-si1"></i><i class="g-si2"></i></span>
+        </div>
+        <div class="g-head" id="gz-head"></div>
+        <div class="g-body" id="gz-body"></div>
+        <nav class="g-tabs" id="gz-tabs-v"></nav>
+        <nav class="g-tabs g-hidden" id="gz-tabs-a"></nav>
+        <div id="gz-toast" role="status" aria-live="polite"></div>
+        <div id="gz-toc"></div>
+        <div id="gz-sheet"></div>
+        <button id="gz-fab" data-act="proto-toggle" aria-label="原型页面导航"></button>
+        <div id="gz-nav"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<input type="file" id="gz-file" accept="image/*" class="g-hidden" aria-hidden="true">
+<input type="file" id="gz-file2" accept="image/*" class="g-hidden" aria-hidden="true">
+
+<script>
+(function(){
+'use strict';
+/* ================= 工具 ================= */
+var $=function(s){ return document.querySelector(s); };
+var $$=function(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); };
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+var store={
+  get:function(k,d){ try{ var v=localStorage.getItem(k); return v==null?d:JSON.parse(v); }catch(e){ return d; } },
+  set:function(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} },
+  del:function(k){ try{ localStorage.removeItem(k); }catch(e){} }
+};
+var GEN=['一','二','三','四','五','六','七','八','九','十'];
+function genLabel(g){ return '第'+(GEN[g-1]||g)+'世'; }
+var CNUM=['零','一','二','三','四','五','六','七','八','九','十'];
+function cnum(n){ if(n<=10) return CNUM[n]; if(n<20) return '十'+CNUM[n-10]; if(n===20) return '二十'; return String(n); }
+function today(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+var REDUCED=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ================= 图标（内联 SVG，无外部依赖） ================= */
+var P={
+ back:'<path d="m15 18-6-6 6-6"/>',
+ chev:'<path d="m9 18 6-6-6-6"/>',
+ search:'<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
+ home:'<path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/>',
+ tree:'<rect x="9" y="2" width="6" height="5" rx="1"/><rect x="2" y="16" width="6" height="5" rx="1"/><rect x="16" y="16" width="6" height="5" rx="1"/><path d="M12 7v4M5 16v-3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3"/>',
+ book:'<path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/>',
+ users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+ camera:'<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3.5"/>',
+ clip:'<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/>',
+ check:'<path d="M20 6 9 17l-5-5"/>',
+ x:'<path d="M18 6 6 18M6 6l12 12"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+ pen:'<path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>',
+ docadd:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M12 12v6M9 15h6"/>',
+ img:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>',
+ logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/>',
+ layers:'<path d="m12 2 10 5-10 5L2 7z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/>',
+ alert:'<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>',
+ eye:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
+ user:'<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+ menu:'<path d="M4 6h16M4 12h16M4 18h16"/>'
+};
+function ic(n,s){ s=s||20; return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(P[n]||'')+'</svg>'; }
+
+/* ================= 演示数据 ================= */
+var SEED={
+ members:[
+  {id:'m1',name:'王德明',zi:'启蒙',hao:'',gen:1,birth:'元至正十一年（1351）',death:'明永乐二年（1404）',father:'',spouse:'赵氏',intro:'王氏始迁祖。元末自太原府携家南迁，卜居桐川之阳，垦荒拓田，遂家焉。为人敦厚，乡里称长者。',pages:[3]},
+  {id:'m2',name:'王文瑞',zi:'辑五',hao:'',gen:2,birth:'明洪武十年（1377）',death:'明景泰元年（1450）',father:'m1',spouse:'钱氏',intro:'德明公长子。务农起家，兼营布业，置田三百亩，建宗祠于村东。',pages:[9]},
+  {id:'m3',name:'王文祥',zi:'辑善',hao:'',gen:2,birth:'明洪武十四年（1381）',death:'明景泰四年（1453）',father:'m1',spouse:'孙氏',intro:'德明公次子。业儒，补郡庠生，课子有方。',pages:[9]},
+  {id:'m4',name:'王守业',zi:'敬修',hao:'',gen:3,birth:'明永乐十六年（1418）',death:'明弘治五年（1492）',father:'m2',spouse:'周氏',intro:'文瑞公长子。承家业，睦族敦亲，岁饥出粟赈济，县旌其门。',pages:[10]},
+  {id:'m5',name:'王守成',zi:'持满',hao:'',gen:3,birth:'明永乐二十年（1422）',death:'明成化十三年（1477）',father:'m2',spouse:'吴氏',intro:'文瑞公次子。精算术，司家计四十年，田产倍增。',pages:[10]},
+  {id:'m6',name:'王守义',zi:'秉直',hao:'',gen:3,birth:'明宣德二年（1427）',death:'明弘治八年（1495）',father:'m3',spouse:'郑氏',intro:'文祥公之子。弃儒从医，悬壶乡里，活人无算，著《医案》二卷。',pages:[10]},
+  {id:'m7',name:'王承志',zi:'仲远',hao:'毅斋',gen:4,birth:'明成化十一年（1475）',death:'明嘉靖二十四年（1545）',father:'m4',spouse:'李氏',intro:'守业公长子。郡庠生，工诗文，尝重修宗谱并撰序。',pages:[11]},
+  {id:'m8',name:'王承嗣',zi:'孝先',hao:'',gen:4,birth:'明成化十四年（1478）',death:'明嘉靖十年（1531）',father:'m5',spouse:'陈氏',intro:'守成公长子。克绍箕裘，扩祠宇，增祭田。',pages:[12]},
+  {id:'m9',name:'王承启',zi:'迪光',hao:'',gen:4,birth:'明成化十八年（1482）',death:'明嘉靖十八年（1539）',father:'m6',spouse:'冯氏',intro:'守义公之子。承父业行医，施药济贫。',pages:[13]},
+  {id:'m10',name:'王绍周',zi:'卜年',hao:'',gen:5,birth:'明弘治十四年（1501）',death:'明万历八年（1580）',father:'m7',spouse:'林氏',intro:'承志公长子。岁贡生，任凤阳府训导。',pages:[15]},
+  {id:'m11',name:'王绍韩',zi:'景范',hao:'',gen:5,birth:'明正德元年（1506）',death:'明万历十年（1582）',father:'m7',spouse:'黄氏',intro:'承志公次子。业盐策，好施与，修桥三座。',pages:[15]}
+ ],
+ reqs:[
+  {id:'r1',type:'修改信息',target:'m7',applicant:'王克明 · 承志公十四世孙',date:'2026-10-20',status:'pending',
+   apply:{kind:'field',field:'birth',value:'明成化十一年（1475）正月初九'},
+   diff:[['生卒年','生于明成化十一年（1475）','生于明成化十一年（1475）正月初九']],
+   evidence:'老谱残页照片（承志公条）',reason:'族中保存的光绪本老谱残页明确记载：承志公生于成化十一年正月初九，请补入生辰。'},
+  {id:'r2',type:'新增族人',target:'',applicant:'王建国 · 守成公后裔',date:'2026-10-22',status:'pending',
+   apply:{kind:'add',member:{name:'王承学',zi:'好古',hao:'',gen:4,birth:'明成化十六年（1480）',death:'明嘉靖十四年（1535）',father:'m5',spouse:'徐氏',intro:'守成公三子。隐居不仕，以诗酒自娱，工书法，邑人称之。',pages:[16]}},
+   diff:[],evidence:'民国三十六年支谱抄本（照片）',reason:'支谱载守成公尚有三子承学，旧谱失载，申请补录。'},
+  {id:'r3',type:'纠正关联',target:'m9',applicant:'王丽华 · 谱学爱好者',date:'2026-10-23',status:'pending',
+   apply:{kind:'page',member:'m9',from:13,to:14},
+   diff:[['关联原谱页','第 13 页（四世齿录·三）','第 14 页（四世齿录·续）']],
+   evidence:'',reason:'第 13 页所载为守义公一支齿录，承启公条目实在下页，请更正关联。'},
+  {id:'r0',type:'修改信息',target:'m10',applicant:'王守拙 · 本族族人',date:'2026-10-12',status:'approved',
+   apply:{kind:'field',field:'intro'},diff:[['职官','任凤阳府训导','任凤阳府教授']],
+   evidence:'府志影印件',reason:'凤阳府志载绍周公任教授而非训导。',result:'已通过，信息已更新'},
+  {id:'r9',type:'修改信息',target:'m11',applicant:'匿名访客',date:'2026-10-08',status:'rejected',
+   apply:{},diff:[['生平','业盐策，好施与','（删除该条目）']],
+   evidence:'',reason:'',result:'驳回：所引资料与原谱不符，建议核对后再提交'}
+ ]
+};
+var VOLS=[
+ {id:'v1',title:'卷一 · 谱序图考',pages:[{n:1,t:'重修宗谱序'},{n:2,t:'凡例'},{n:3,t:'始迁祖考'},{n:4,t:'源流考'},{n:5,t:'总世系图'},{n:6,t:'家训'},{n:7,t:'祭田记'},{n:8,t:'领谱字号'}]},
+ {id:'v2',title:'卷二 · 齿录',pages:[{n:9,t:'二世齿录'},{n:10,t:'三世齿录'},{n:11,t:'四世齿录·一'},{n:12,t:'四世齿录·二'},{n:13,t:'四世齿录·三'},{n:14,t:'四世齿录·续'},{n:15,t:'五世齿录'},{n:16,t:'五世齿录·续'},{n:17,t:'补遗'},{n:18,t:'义田记'},{n:19,t:'艺文志'},{n:20,t:'跋'}]}
+];
+function reseed(){
+ DB={v:3,
+   members:SEED.members.map(function(m){ var c={}; for(var k in m) c[k]=m[k]; c.pages=m.pages.slice(); return c; }),
+   reqs:JSON.parse(JSON.stringify(SEED.reqs))};
+ store.set('gz_db',DB);
+}
+var DB=store.get('gz_db',null);
+if(!DB||DB.v!==3){ reseed(); DB=store.get('gz_db',null); }
+var MEMBERS=DB.members, REQS=DB.reqs;
+function save(){ store.set('gz_db',DB); }
+function byId(id){ for(var i=0;i<MEMBERS.length;i++) if(MEMBERS[i].id===id) return MEMBERS[i]; return null; }
+function kids(id){ return MEMBERS.filter(function(m){ return m.father===id; }); }
+function pageMem(n){ return MEMBERS.filter(function(m){ return (m.pages||[]).indexOf(n)>=0; }); }
+function pageMeta(n){ for(var i=0;i<VOLS.length;i++){ var v=VOLS[i]; for(var j=0;j<v.pages.length;j++){ if(v.pages[j].n===n) return {vol:v,p:v.pages[j]}; } } return null; }
+function linkedCount(){ var c=0; VOLS.forEach(function(v){ v.pages.forEach(function(p){ if(pageMem(p.n).length) c++; }); }); return c; }
+function totalPages(){ return VOLS.reduce(function(a,v){ return a+v.pages.length; },0); }
+function nextUnlinked(vid){ var v=VOLS.filter(function(x){ return x.id===vid; })[0]||VOLS[1];
+ for(var i=0;i<v.pages.length;i++){ if(!pageMem(v.pages[i].n).length) return v.pages[i].n; } return v.pages[0].n; }
+function shortDate(s){ return String(s||'').split('（')[0]; }
+var FILL=['盖闻木有本而枝繁，水有源而流远，人之有祖，亦犹是焉。','谱牒之作，所以敬宗收族，明世系，辨昭穆，而垂无穷者也。','王氏出自太原，其先晋公族之后，世为著姓。','自唐季离乱，子孙散处四方，至宋南渡，遂家于桐川之阳。','族之人尚其鉴兹，勉之慎之，毋忘乃祖之训。','岁在重光赤奋若，仲秋之月，十二世孙率族人谨识。'];
+
+/* ================= 全局状态 ================= */
+var S={
+ loggedIn:store.get('gz_auth',false), fs:store.get('gz_fs','0'),
+ stack:[], cur:'', params:{},
+ capStep:1, cap:null, evApply:[],
+ revTab:'pending', mQ:'', dirQ:'', readerPage:1, zoom:1, navOpen:false, anim:false, busy:false
+};
+function memLen(){ return MEMBERS.length; }
+function pendCount(){ return REQS.filter(function(r){ return r.status==='pending'; }).length; }
+
+/* ================= 小构件 ================= */
+function stat(v,l){ return '<div class="g-stat"><b>'+v+'</b><span>'+l+'</span></div>'; }
+function entry(goId,icn,name,sub){ return '<button class="g-entry" data-go="'+goId+'"><span class="g-eicon">'+ic(icn,22)+'</span><span><b>'+name+'</b><span>'+sub+'</span></span></button>'; }
+function lk(m){ return '<button class="g-lk" data-go="member" data-id="'+m.id+'">'+esc(m.name)+'</button>'; }
+function th(n){ var mem=pageMem(n);
+ return '<div class="g-thumb" data-go="reader" data-page="'+n+'"><div class="g-thumbpaper"><i class="g-thl"'+(mem.length?'':' style="display:none"')+'></i><i class="g-thside"></i></div><span>'+cnum(n)+'　'+(mem.length?mem.length+' 人':'未关联')+'</span></div>'; }
+function avatar(m){ return '<div class="g-avatar">'+esc(m.name.slice(1)||m.name)+'</div>'; }
+function mrow(m){ return '<div class="g-row" data-go="member" data-id="'+m.id+'">'+avatar(m)
+ +'<div class="g-rowmain"><b>'+esc(m.name)+'</b><div class="g-sub">'+genLabel(m.gen)+(m.zi?' · 字'+esc(m.zi):'')+(m.birth?' · '+esc(shortDate(m.birth)):'')+'</div></div>'
+ +'<div class="g-rowr">'+((m.pages&&m.pages.length)?'<span class="g-minichip">谱 '+m.pages.length+' 页</span>':'')+'<span class="g-chev">'+ic('chev',17)+'</span></div></div>'; }
+function chip(m){ return '<button class="g-chip g-chipred" data-go="member" data-id="'+m.id+'">'+esc(m.name)+'</button>'; }
+function rcard(name,sub,on){ return '<label class="g-rcard'+(on?' g-on':'')+'"><input type="radio" name="gz-appt" value="'+name+'"'+(on?' checked':'')+'><span class="g-rcname">'+name+'</span><span class="g-rcsub">'+sub+'</span></label>'; }
+function field(fid,label,inner,err,star){ return '<div class="g-field" id="'+fid+'"><label class="g-flabel">'+label+(star?' <em>*</em>':'')+'</label>'+inner+'<div class="g-err">'+(err||'请填写完整')+'</div></div>'; }
+function selOpts(list,val,blank){ var h=blank?'<option value=""'+(val?'':' selected')+'>不详</option>':'';
+ list.forEach(function(m){ h+='<option value="'+m.id+'"'+(val===m.id?' selected':'')+'>'+esc(m.name)+' · '+genLabel(m.gen)+'</option>'; }); return h; }
+
+/* ---- 模拟谱页 ---- */
+function simPage(n){
+ var meta=pageMeta(n), mem=pageMem(n);
+ var inner='<div class="g-ptitle">'+esc(meta.p.t)+'</div>';
+ if(mem.length){
+  inner+=mem.map(function(m){
+   var k=kids(m.id).map(function(x){ return esc(x.name); }).join('、');
+   return '<div>'+genLabel(m.gen)+'　讳'+lk(m)
+    +(m.zi?'　字'+esc(m.zi):'')+(m.hao?'　号'+esc(m.hao):'')
+    +(m.birth?'　生于'+esc(shortDate(m.birth)):'')+(m.death?'　卒于'+esc(shortDate(m.death)):'')
+    +(m.spouse?'　配'+esc(m.spouse):'')+(k?'　子 '+k:'')+'</div>';
+  }).join('');
+  inner+='<div>'+FILL[n%FILL.length]+'</div>';
+ }else{
+  inner+='<div>'+FILL[(n*2)%FILL.length]+'</div><div>'+FILL[(n*2+1)%FILL.length]+'</div><div>'+FILL[(n*2+3)%FILL.length]+'</div>';
+  if(n===5) inner+='<div style="color:#9c3a32">（总图人物关联，待录入标注）</div>';
+ }
+ var volName=meta.vol.title.split(' ·')[0];
+ return '<div class="g-simpage"><div class="g-simframe"></div><div class="g-stitch"></div><div class="g-simbody">'+inner+'</div><div class="g-simfoot">王氏宗谱 · '+esc(volName)+' · '+cnum(n)+'</div></div>';
+}
+
+/* ================= 各屏渲染 ================= */
+var R={};
+
+R.home=function(){
+ return '<div class="g-pad">'
+ +'<div class="g-hero"><div class="g-seal" style="width:64px;height:64px;font-size:19px">王氏<br>宗谱</div>'
+ +'<h1>太原堂王氏宗谱</h1><div class="g-herosub">桐川王氏 · 智慧谱馆</div>'
+ +'<div class="g-herorow"><span class="g-chip">公开浏览 · 无需登录</span></div></div>'
+ +'<div class="g-searchbar" data-go="directory">'+ic('search',19)+'<span>搜索族人姓名、字号…</span></div>'
+ +'<div class="g-egrid">'
+ +entry('tree','tree','世系图',memLen()+' 位族人 · 5 代')
+ +entry('catalog','book','原谱阅览','线装原谱 '+totalPages()+' 页')
+ +entry('directory','users','族人名录','按世代查阅')
+ +entry('apply','docadd','申请变更','纠错 · 补录')
+ +'</div>'
+ +'<div class="g-sec">谱馆公告</div>'
+ +'<div class="g-card">'
+ +'<div class="g-nrow"><span class="g-ndot">·</span><p>秋祭大典定于十月初三日上午在王氏宗祠举行，请族人准时参加。</p><span class="g-ndate">10-18</span></div>'
+ +'<div class="g-nrow"><span class="g-ndot">·</span><p>卷二第 14—20 页尚未录入关联，欢迎族人提供辨识帮助。</p><span class="g-ndate">10-12</span></div>'
+ +'</div>'
+ +'<div class="g-sec">谱馆概况</div><div class="g-stats">'
+ +stat(memLen(),'位族人')+stat(totalPages(),'页原谱')+stat(linkedCount(),'页已关联')
+ +'</div>'
+ +'<div class="g-footnote">数据来源：桐川王氏宗谱（光绪本）扫描件<br>内容由谱馆管理员维护 · 访客可提交变更申请</div>'
+ +'</div>';
+};
+
+R.tree=function(){
+ return '<div class="g-pad">'
+ +'<div class="g-treezoom"><span class="g-hint" style="margin:0 auto 0 4px">点击人名查看详情</span>'
+ +'<button class="g-zbtn" data-act="zoom" data-v="-" aria-label="缩小">−</button>'
+ +'<button class="g-zbtn" data-act="zoom" data-v="+" aria-label="放大">＋</button></div>'
+ +'<div class="g-treewrap" id="gz-treewrap"><div class="g-tree" id="gz-tree">'+treeHTML()+'</div></div>'
+ +'<div class="g-tips">'+ic('alert',17)+'<span>图中为直系世系（男丁），配偶记于各人名下。待审核的新增族人通过后自动上图。</span></div>'
+ +'</div>';
+};
+function treeHTML(){
+ function li(m){
+  var k=kids(m.id);
+  return '<li><div class="g-tnode" data-go="member" data-id="'+m.id+'">'
+   +(m.gen===1?'<span class="g-tbadge">始迁祖</span>':'')
+   +'<b>'+esc(m.name)+'</b><span class="g-tsub">'+(m.zi?'字'+esc(m.zi):'&nbsp;')+'</span>'
+   +'<span class="g-tsp">'+(m.spouse?'配 '+esc(m.spouse):'')+'</span></div>'
+   +(k.length?'<ul>'+k.map(li).join('')+'</ul>':'')+'</li>';
+ }
+ var roots=MEMBERS.filter(function(m){ return !m.father; });
+ return '<ul>'+roots.map(li).join('')+'</ul>';
+}
+
+R.catalog=function(){
+ return '<div class="g-pad">'
+ +'<div class="g-intro">纸质原谱已逐页拍摄归档。绿色刻度表示该页已录入并关联族人，点击卷册进入翻书阅览。</div>'
+ +VOLS.map(function(v){
+   var ln=v.pages.filter(function(p){ return pageMem(p.n).length; }).length;
+   return '<div class="g-card g-vol" data-go="reader" data-page="'+v.pages[0].n+'">'
+    +'<div class="g-voltop"><div class="g-seal g-seal-sm">'+esc(v.title.split(' ·')[0])+'</div>'
+    +'<div class="g-volinfo"><b>'+esc(v.title)+'</b><span>'+v.pages.length+' 页 · 已关联 '+ln+' 页</span></div>'
+    +'<span class="g-chev">'+ic('chev',18)+'</span></div>'
+    +'<div class="g-dots">'+v.pages.map(function(p){ return '<i class="'+(pageMem(p.n).length?'g-on':'')+'"></i>'; }).join('')+'</div>'
+    +'</div>';
+  }).join('')
+ +'</div>';
+};
+
+R.directory=function(){
+ var h='<div class="g-pad"><div class="g-searchinput">'+ic('search',18)
+  +'<input id="gz-dq" type="search" placeholder="搜索姓名、字号、生平" value="'+esc(S.dirQ)+'" aria-label="搜索族人"></div>'
+  +'<div id="gz-dlist">'+dirList()+'</div></div>';
+ return h;
+};
+function dirList(){
+ var q=S.dirQ.trim();
+ var list=q?MEMBERS.filter(function(m){ return (m.name+m.zi+m.hao+m.intro+(m.spouse||'')).indexOf(q)>=0; }):MEMBERS;
+ if(q&&!list.length) return '<div class="g-empty">未找到「'+esc(q)+'」相关的族人</div>';
+ var gens=[]; list.forEach(function(m){ if(gens.indexOf(m.gen)<0) gens.push(m.gen); });
+ gens.sort(function(a,b){ return a-b; });
+ var h='';
+ gens.forEach(function(g){
+  var gm=list.filter(function(m){ return m.gen===g; });
+  h+='<div class="g-sec">'+genLabel(g)+'<span class="g-secx">'+gm.length+' 人</span></div>';
+  gm.forEach(function(m){ h+=mrow(m); });
+ });
+ return h;
+}
+
+R.member=function(p){
+ var m=byId(p.id); if(!m) return '<div class="g-pad"><div class="g-empty">未找到该族人</div></div>';
+ var f=m.father?byId(m.father):null;
+ var ks=kids(m.id);
+ var pages=m.pages||[];
+ return '<div class="g-pad">'
+ +'<div class="g-card g-mcard"><div class="g-mctop"><div class="g-avatar g-avatar-lg">'+esc(m.name.slice(1)||m.name)+'</div>'
+ +'<div class="g-mcinfo"><h2>'+esc(m.name)+'</h2><div class="g-mchips"><span class="g-chip g-chipred">'+genLabel(m.gen)+'</span>'
+ +(m.zi?'<span class="g-chip">字 '+esc(m.zi)+'</span>':'')+(m.hao?'<span class="g-chip">号 '+esc(m.hao)+'</span>':'')+'</div></div></div>'
+ +'<div class="g-kvs">'+kv('生于',m.birth)+kv('卒于',m.death)+kv('配偶',m.spouse)+kv('记录页数',pages.length?pages.length+' 页':'暂无')+'</div></div>'
+ +'<div class="g-sec">亲属关系</div><div class="g-card g-relcard">'
+ +(f?'<div class="g-relrow"><span class="g-relk">父亲</span><div class="g-relv">'+chip(f)+'</div></div>':'')
+ +(ks.length?'<div class="g-relrow"><span class="g-relk">子女</span><div class="g-relv">'+ks.map(chip).join('')+'</div></div>':'')
+ +(m.spouse?'<div class="g-relrow"><span class="g-relk">配偶</span><div class="g-relv"><b>'+esc(m.spouse)+'</b></div></div>':'')
+ +'</div>'
+ +'<div class="g-sec">生平</div><div class="g-card g-bio">'+esc(m.intro||'暂无记载')+'</div>'
+ +'<div class="g-sec">关联原谱<span class="g-secx">'+(pages.length?pages.length+' 页 · 点击查看原页':'')+'</span></div>'
+ +(pages.length?'<div class="g-thumbs">'+pages.map(th).join('')+'</div>':'<div class="g-hint" style="margin:0 2px">暂无关联原谱页，可在录入流程中建立关联。</div>')
+ +'<div class="g-src">资料来源：'+(pages.length?'原谱第 '+pages.map(function(n){ return cnum(n); }).join('、')+' 页':'待补')+' · 最后更新 2026-10-01</div>'
+ +'<div class="g-stickyfoot">'
+ +(S.loggedIn
+   ?'<button class="g-btn" data-go="medit" data-id="'+m.id+'">'+ic('pen',19)+'编辑资料</button>'
+   :'<button class="g-btn" data-act="apply-for" data-id="'+m.id+'">'+ic('pen',19)+'申请变更</button>')
+ +'</div></div>';
+};
+function kv(k,v){ return '<div class="g-kv"><span>'+k+'</span><b>'+esc(v||'—')+'</b></div>'; }
+
+R.reader=function(p){
+ var n=S.readerPage, meta=pageMeta(n), mem=pageMem(n);
+ var h='<div class="g-reader">'
+ +'<div class="g-bookwrap"><div class="g-book" id="gz-book" data-act="booktap"><div class="g-pageabs" id="gz-pagec">'+simPage(n)+'</div></div></div>'
+ +'<div class="g-pageind">'+esc(meta.vol.title)+' · 第 '+n+' 页 / 共 '+totalPages()+' 页</div>'
+ +(mem.length
+   ?'<div class="g-linkrow"><span class="g-linklab">本页关联</span>'+mem.map(chip).join('')+'</div>'
+   :'<div class="g-linkrow g-none">本页尚未关联族人'+(S.loggedIn?' —— <button class="g-linkgo" data-act="cap-this">去录入关联</button>':'，可在管理员录入流程中标注')+'</div>')
+ +'<div class="g-pager"><button class="g-btn g-line" data-act="flip" data-v="prev">‹ 上一页</button><button class="g-btn" data-act="flip" data-v="next">下一页 ›</button></div>'
+ +'<div class="g-fliphint">提示：左右滑动书页、或点按书页左右两侧翻页</div>'
+ +'</div>';
+ return h;
+};
+
+R.apply=function(p){
+ var t=p.target?byId(p.target):null;
+ var type=p.type||'修改信息';
+ var h='<div class="g-pad">'
+ +'<div class="g-intro">任何访客都可以提交变更申请，由谱馆管理员审核后才会生效，原资料不受影响。</div>'
+ +(t?'<div class="g-card g-tcard"><span class="g-relk" style="min-width:auto">变更对象</span><b>'+esc(t.name)+'</b><span class="g-chip">'+genLabel(t.gen)+'</span></div>':'')
+ +'<div class="g-sec">变更类型</div><div class="g-rcards" id="gz-apptype">'
+ +rcard('修改信息','更正现有资料',type==='修改信息')
+ +rcard('新增族人','补录漏载族人',type==='新增族人')
+ +rcard('纠正关联','页面与人对位',type==='纠正关联')
+ +'</div>'
+ +'<div class="g-sec">变更内容<span class="g-secx">必填</span></div>'
+ +field('gz-af','说明','<textarea class="g-textarea" id="gz-adesc" placeholder="请写明需要更正或补充的内容与依据…&#10;如：族中老谱记载承志公生于正月初九…"></textarea>','请填写变更内容，便于管理员核对')
+ +'<div class="g-sec">佐证图片<span class="g-secx">选填 · 最多 2 张</span></div>'
+ +'<div class="g-evgrid" id="gz-aev">'+evSlots()+'</div>'
+ +'<div class="g-field" style="margin-top:18px"><label class="g-flabel">您的称呼</label>'
+ +'<input class="g-input" id="gz-aapp" placeholder="如：王克明（承志公十四世孙），可匿名"></div>'
+ +'<div class="g-tips">'+ic('alert',17)+'<span>提交后生成申请编号，管理员将在 7 日内审核；无论通过与否，现有资料都不会被直接改动。</span></div>'
+ +'<div style="height:18px"></div>'
+ +'<button class="g-btn" data-act="apply-submit">'+ic('check',19)+'提交申请</button>'
+ +'</div>';
+ return h;
+};
+function evSlots(){
+ var h='';
+ for(var i=0;i<2;i++){
+  if(S.evApply[i]) h+='<button class="g-evslot" data-act="ev-del-apply" data-i="'+i+'"><img src="'+S.evApply[i]+'" alt="佐证图片"><span style="position:absolute;bottom:6px;left:0;right:0;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.7);font-size:12px">点击移除</span></button>';
+  else h+='<button class="g-evslot" data-act="ev-add-apply">'+ic('img',26)+'<span>添加图片</span></button>';
+ }
+ return h;
+}
+
+R.login=function(){
+ return '<div class="g-pad g-login">'
+ +'<div class="g-seal" style="width:76px;height:76px;font-size:22px;margin:30px auto 16px">王氏<br>谱馆</div>'
+ +'<h2 class="g-lgt">智慧谱馆 · 管理端</h2>'
+ +'<p class="g-lgs">仅限谱馆管理员登录维护<br>原型演示：任意账号密码均可登录</p>'
+ +field('gz-lf1','管理员账号','<input class="g-input" id="gz-lu" value="admin" autocomplete="off">')
+ +field('gz-lf2','登录密码','<input class="g-input" id="gz-lp" type="password" value="123456">')
+ +'<button class="g-btn" data-act="login" style="margin-top:12px">登　录</button>'
+ +'<button class="g-btn g-ghost" data-act="login-back" style="margin-top:12px">返回浏览端</button>'
+ +'</div>';
+};
+
+R.dashboard=function(){
+ var pend=pendCount(), now=new Date();
+ var wk=['日','一','二','三','四','五','六'][now.getDay()];
+ return '<div class="g-pad">'
+ +'<div class="g-greet"><b>欢迎回来，管理员</b><span>'+now.getFullYear()+' 年 '+(now.getMonth()+1)+' 月 '+now.getDate()+' 日 · 星期'+wk+'</span></div>'
+ +(pend
+   ?'<div class="g-alert" data-go="review">'+ic('bell',20)+'<b>有 '+pend+' 条变更申请待审核</b><span class="g-chev">'+ic('chev',18)+'</span></div>'
+   :'<div class="g-alert g-okalert">'+ic('check',20)+'<b>暂无待办事项</b></div>')
+ +'<div class="g-sec">今日概览</div><div class="g-stats">'
+ +stat(pend,'待审核')+stat(memLen(),'位族人')+stat(linkedCount()+'/'+totalPages(),'原谱关联')
+ +'</div>'
+ +'<div class="g-sec">快捷操作</div><div class="g-egrid">'
+ +entry('capture','camera','拍照录入','继续录入原谱')
+ +entry('members','users','族人维护','编辑族人资料')
+ +entry('review','clip','变更审核','处理族人申请')
+ +entry('book','layers','原谱管理','卷页与关联状态')
+ +'</div>'
+ +'<div class="g-sec">适老显示</div><div class="g-card g-pad-s"><div class="g-fsrow">'
+ +'<div><b>字号大小</b><span>根据视力情况选择，全站即时生效</span></div>'
+ +'<div class="g-seg">'+segFs()+'</div></div></div>'
+ +'<div style="height:22px"></div>'
+ +'<button class="g-btn g-ghost" data-act="logout">'+ic('logout',18)+'退出登录</button>'
+ +'</div>';
+};
+function segFs(){ var n=['标准','大字','特大'],h='';
+ for(var i=0;i<3;i++) h+='<button class="g-seg-i'+(S.fs===String(i)?' g-on':'')+'" data-act="fs" data-v="'+i+'">'+n[i]+'</button>';
+ return h; }
+
+R.capture=function(){
+ var st=S.capStep, cap=S.cap; if(!cap) capInit({});
+ var steps=['拍摄谱页','选择卷页','录入信息','确认关联'];
+ var h='<div class="g-pad">'
+ +'<div class="g-steps">'+[1,2,3,4].map(function(i){ return '<span class="g-dot'+(i<=st?' g-on':'')+'"></span>'; }).join('')
+ +'<span class="g-steplabel">第 '+['一','二','三','四'][st-1]+' 步 · 共四步</span></div>'
+ +'<div class="g-steptitle">'+steps[st-1]+'</div>';
+ if(st===1){
+  h+='<div class="g-camera" data-act="cap-pick">'
+   +(cap.img?'<img src="'+cap.img+'" alt="谱页照片">'
+     :(cap.photo==='example'
+       ?simPage(cap.page||14)
+       :ic('camera',36)+'<b>点击拍摄或从相册选择</b><span>谱页平铺、光线充足、文字清晰</span>'))
+   +'</div>'
+  +'<div class="g-tips">'+ic('alert',17)+'<span>操作提示：将谱页平铺拍摄，确保四角完整、文字清晰；拍完不满意可以重拍。</span></div>'
+  +'<div style="height:16px"></div>'
+  +'<button class="g-btn g-line" data-act="cap-example">'+ic('img',18)+'使用示例谱页（演示）</button>'
+  +'<div style="height:10px"></div>'
+  +'<button class="g-btn" data-act="cap-next">下一步：选择卷页</button>';
+ }else if(st===2){
+  var meta=pageMeta(cap.page);
+  h+='<div class="g-sec">选择卷册</div><div class="g-rcards">'
+   +VOLS.map(function(v){ return '<label class="g-rcard'+(cap.vol===v.id?' g-on':'')+'" data-act="vol" data-id="'+v.id+'"><span class="g-rcname">'+esc(v.title)+'</span><span class="g-rcsub">'+v.pages.length+' 页</span></label>'; }).join('')
+   +'</div>'
+  +'<div class="g-sec">页码</div>'
+  +'<div class="g-stepper"><button class="g-stp" data-act="page-dn" aria-label="上一页">−</button>'
+  +'<div class="g-stpv"><b>'+cap.page+'</b><span>'+esc(meta.p.t)+'</span></div>'
+  +'<button class="g-stp" data-act="page-up" aria-label="下一页">＋</button></div>'
+  +'<div class="g-hint">已自动定位到《'+esc(meta.vol.title)+'》第一个未录入的页面，也可手动调整。</div>'
+  +'<div class="g-sec">页面预览</div><div class="g-thumbs">'+th(cap.page)+'</div>'
+  +'<div style="height:10px"></div><div class="g-pager">'
+  +'<button class="g-btn g-line" data-act="cap-back">上一步</button>'
+  +'<button class="g-btn" data-act="cap-next">下一步：录入信息</button></div>';
+ }else if(st===3){
+  var f=cap.f;
+  h+='<div class="g-ocr" id="gz-ocr" style="display:'+(cap.ocr?'flex':'none')+'">'+ic('eye',17)
+   +'<span>初步识别：本页疑为「'+esc(f.name||'')+'」条目，已预填如下，请逐项核对修改。</span></div>'
+  +field('gz-cnf','姓名 <em>*</em>','<input class="g-input" id="gz-cn" value="'+esc(f.name||'')+'" placeholder="如：王承烈">','请填写姓名')
+  +field('gz-cgf','世代','<select class="g-select" id="gz-cg">'+[1,2,3,4,5,6].map(function(g){ return '<option value="'+g+'"'+((f.gen||4)===g?' selected':'')+'>'+genLabel(g)+'</option>'; }).join('')+'</select>')
+  +'<div class="g-2col">'
+  +field('gz-czf','字 / 号','<input class="g-input" id="gz-cz" value="'+esc(f.zi||'')+'" placeholder="如：仲远">')
+  +field('gz-cff','父亲','<select class="g-select" id="gz-cf">'+selOpts(MEMBERS,f.father,true)+'</select>')
+  +'</div>'
+  +'<div class="g-2col">'
+  +field('gz-cbf','生于','<input class="g-input" id="gz-cb" value="'+esc(f.birth||'')+'" placeholder="明成化二十年（1484）">')
+  +field('gz-cdf','卒于','<input class="g-input" id="gz-cd" value="'+esc(f.death||'')+'" placeholder="明嘉靖二十年（1541）">')
+  +'</div>'
+  +field('gz-csf','配偶','<input class="g-input" id="gz-cs" value="'+esc(f.spouse||'')+'" placeholder="如：徐氏">')
+  +field('gz-cif','生平','<textarea class="g-textarea" id="gz-ci" style="min-height:86px" placeholder="简要生平事迹…">'+esc(f.intro||'')+'</textarea>')
+  +'<div style="height:8px"></div><div class="g-pager">'
+  +'<button class="g-btn g-line" data-act="cap-back">上一步</button>'
+  +'<button class="g-btn" data-act="cap-next">下一步：确认关联</button></div>';
+ }else if(st===4){
+  var meta2=pageMeta(cap.page);
+  h+='<div class="g-card g-pad-s g-sumbox">'
+   +'<div class="g-sumrow"><span>谱页</span><b>'+esc(meta2.vol.title)+' · 第 '+cap.page+' 页</b></div>'
+   +'<div class="g-sumrow"><span>族人</span><b>'+esc(cap.f.name||'')+'（'+genLabel(cap.f.gen||4)+'）</b></div>'
+   +'<div class="g-sumrow"><span>父亲</span><b>'+(cap.f.father&&byId(cap.f.father)?esc(byId(cap.f.father).name):'不详')+'</b></div>'
+   +'</div>'
+  +'<div class="g-sec">关联本页的族人</div>'
+  +'<div class="g-hint" style="margin:0 2px 10px">勾选后，这些族人的详情页都会展示本页原谱图片。</div>'
+  +'<label class="g-check g-on"><input type="checkbox" checked disabled><div><b>'+esc(cap.f.name||'')+'</b><span>本页新增</span></div></label>'
+  +MEMBERS.map(function(m){ var on=(m.pages||[]).indexOf(cap.page)>=0;
+    return '<label class="g-check'+(on?' g-on':'')+'"><input type="checkbox" data-lid="'+m.id+'"'+(on?' checked':'')+'><div><b>'+esc(m.name)+'</b><span>'+genLabel(m.gen)+(m.zi?' · 字'+esc(m.zi):'')+'</span></div></label>'; }).join('')
+  +'<div style="height:12px"></div><div class="g-pager">'
+  +'<button class="g-btn g-line" data-act="cap-back">上一步</button>'
+  +'<button class="g-btn g-green" data-act="cap-finish">'+ic('check',18)+'完成录入</button></div>';
+ }else if(st===5){
+  h+='<div class="g-done"><div class="g-doneseal">'+ic('check',42)+'</div>'
+   +'<h2>录入成功</h2><p>'+esc(S.cap.f.name)+' 已录入系统，<br>并与原谱第 '+S.cap.page+' 页建立双向关联</p>'
+  +'<button class="g-btn" data-act="cap-again">'+ic('camera',18)+'继续录入下一页</button>'
+  +'<div style="height:10px"></div>'
+  +'<button class="g-btn g-line" data-act="done-dash">返回工作台</button></div>';
+ }
+ h+='</div>';
+ return h;
+};
+
+R.members=function(){
+ return '<div class="g-pad">'
+ +'<div class="g-listtop"><div class="g-searchinput">'+ic('search',18)
+ +'<input id="gz-mq" type="search" placeholder="搜索族人" value="'+esc(S.mQ)+'" aria-label="搜索族人"></div>'
+ +'<button class="g-btn" style="width:auto;min-height:44px;font-size:15px;padding:8px 14px;border-radius:12px" data-go="medit" data-id="">'+ic('plus',17)+'新增</button></div>'
+ +'<div id="gz-mlist">'+memberList()+'</div></div>';
+};
+function memberList(){
+ var q=S.mQ.trim();
+ var list=q?MEMBERS.filter(function(m){ return (m.name+m.zi+m.hao).indexOf(q)>=0; }):MEMBERS;
+ if(q&&!list.length) return '<div class="g-empty">未找到相关族人</div>';
+ var gens=[]; list.forEach(function(m){ if(gens.indexOf(m.gen)<0) gens.push(m.gen); });
+ gens.sort(function(a,b){ return a-b; });
+ var h='';
+ gens.forEach(function(g){
+  h+='<div class="g-sec">'+genLabel(g)+'<span class="g-secx">点击编辑</span></div>';
+  list.filter(function(m){ return m.gen===g; }).forEach(function(m){
+   h+='<div class="g-row" data-go="medit" data-id="'+m.id+'">'+avatar(m)
+    +'<div class="g-rowmain"><b>'+esc(m.name)+'</b><div class="g-sub">'+genLabel(m.gen)+(m.zi?' · 字'+esc(m.zi):'')+(m.birth?' · '+esc(shortDate(m.birth)):'')+'</div></div>'
+    +'<div class="g-rowr"><span class="g-minichip">'+((m.pages&&m.pages.length)?'谱 '+m.pages.length+' 页':'未关联')+'</span><span class="g-chev">'+ic('pen',16)+'</span></div></div>';
+  });
+ });
+ return h;
+}
+
+R.medit=function(p){
+ var m=p.id?byId(p.id):null;
+ var v=function(x){ return esc(m?(m[x]||''):''); };
+ return '<div class="g-pad">'
+ +'<div class="g-intro">'+(m?'修改保存后立即生效，访客端同步更新。':'新增族人后，可在「拍照录入」流程中建立与原谱页的关联。')+'</div>'
+ +field('gz-ef1','姓名 <em>*</em>','<input class="g-input" id="gz-en" value="'+v('name')+'" placeholder="如：王承烈">','请填写姓名')
+ +field('gz-ef2','世代','<select class="g-select" id="gz-eg">'+[1,2,3,4,5,6].map(function(g){ return '<option value="'+g+'"'+((m?m.gen:4)===g?' selected':'')+'>'+genLabel(g)+'</option>'; }).join('')+'</select>')
+ +'<div class="g-2col">'
+ +field('gz-ef3','字','<input class="g-input" id="gz-ez" value="'+v('zi')+'">')
+ +field('gz-ef4','号','<input class="g-input" id="gz-eh" value="'+v('hao')+'">')
+ +'</div>'
+ +'<div class="g-2col">'
+ +field('gz-ef5','生于','<input class="g-input" id="gz-eb" value="'+v('birth')+'" placeholder="明成化二十年（1484）">')
+ +field('gz-ef6','卒于','<input class="g-input" id="gz-ed" value="'+v('death')+'">')
+ +'</div>'
+ +field('gz-ef7','父亲','<select class="g-select" id="gz-ef">'+selOpts(MEMBERS.filter(function(x){ return !m||x.id!==m.id; }),m?m.father:'',true)+'</select>')
+ +field('gz-ef8','配偶','<input class="g-input" id="gz-es" value="'+v('spouse')+'" placeholder="如：徐氏">')
+ +field('gz-ef9','生平','<textarea class="g-textarea" id="gz-ei">'+v('intro')+'</textarea>')
+ +'<div style="height:10px"></div>'
+ +'<button class="g-btn" data-act="medit-save">'+ic('check',19)+'保　存</button>'
+ +'</div>';
+};
+
+R.review=function(){
+ var pend=REQS.filter(function(r){ return r.status==='pending'; });
+ var done=REQS.filter(function(r){ return r.status!=='pending'; });
+ var list=S.revTab==='pending'?pend:done;
+ var h='<div class="g-pad">'
+ +'<div class="g-seg" style="margin-bottom:14px">'
+ +'<button class="g-seg-i'+(S.revTab==='pending'?' g-on':'')+'" data-act="revtab" data-v="pending">待处理 '+pend.length+'</button>'
+ +'<button class="g-seg-i'+(S.revTab==='done'?' g-on':'')+'" data-act="revtab" data-v="done">已处理</button></div>';
+ if(!list.length) h+='<div class="g-empty g-card">'+(S.revTab==='pending'?'暂无待处理的申请':'暂无处理记录')+'</div>';
+ var TC={'修改信息':['修','g-av-blue'],'新增族人':['增','g-av-green'],'纠正关联':['纠','g-av-gold']};
+ list.forEach(function(r){
+  var tn=r.target&&byId(r.target)?byId(r.target).name:(r.apply&&r.apply.member?r.apply.member.name:'—');
+  var tc=TC[r.type]||['申',''];
+  var chipHtml=r.status==='pending'?'<span class="g-minichip g-pend">待审核</span>'
+   :(r.status==='approved'?'<span class="g-minichip g-okchip">已通过</span>':'<span class="g-minichip g-nochip">已驳回</span>');
+  h+='<div class="g-row" data-go="revdetail" data-id="'+r.id+'">'
+   +'<div class="g-avatar g-avsq '+tc[1]+'">'+tc[0]+'</div>'
+   +'<div class="g-rowmain"><b>'+esc(r.type)+' · '+esc(tn)+'</b><div class="g-sub">'+esc(r.applicant)+' · '+r.date+'</div></div>'
+   +'<div class="g-rowr">'+chipHtml+'<span class="g-chev">'+ic('chev',17)+'</span></div></div>';
+ });
+ h+='</div>';
+ return h;
+};
+
+R.revdetail=function(p){
+ var r=null; REQS.forEach(function(x){ if(x.id===p.id) r=x; });
+ if(!r) return '<div class="g-pad"><div class="g-empty">未找到该申请</div></div>';
+ var tn=r.target&&byId(r.target)?byId(r.target).name:'';
+ var h='<div class="g-pad">'
+ +'<div class="g-card g-pad-s">'
+ +'<div class="g-sumrow" style="display:flex;gap:12px;padding:4px 2px"><span style="color:var(--ink3);font-size:14px;flex:none">类型</span><b style="font-weight:600">'+esc(r.type)+'</b></div>'
+ +(tn?'<div class="g-sumrow" style="display:flex;gap:12px;padding:8px 2px 4px;border-top:1px solid var(--line)"><span style="color:var(--ink3);font-size:14px;flex:none">对象</span><b style="font-weight:600">'+esc(tn)+'</b></div>':'')
+ +'</div>';
+ if(r.diff&&r.diff.length){
+  h+='<div class="g-sec">信息对比<span class="g-secx">原信息 → 申请变更</span></div><div class="g-diff">'
+   +r.diff.map(function(d){ return '<div class="g-diffr"><div class="g-dfk">'+esc(d[0])+'</div><div class="g-dfold">'+esc(d[1])+'</div><div class="g-dfnew">'+esc(d[2])+'</div></div>'; }).join('')
+   +'</div>';
+ }
+ if(r.apply&&r.apply.kind==='add'){
+  var nm=r.apply.member;
+  h+='<div class="g-sec">拟新增族人</div><div class="g-card"><div class="g-kvs" style="padding:14px">'
+   +kv('姓名',nm.name)+kv('世代',genLabel(nm.gen))+kv('字',nm.zi)+kv('生于',nm.birth)+kv('卒于',nm.death)+kv('配偶',nm.spouse)
+   +'</div><div style="padding:0 14px 14px;font-size:14px;color:var(--ink2)">父亲：'+(nm.father&&byId(nm.father)?esc(byId(nm.father).name):'不详')+'<br>生平：'+esc(nm.intro)+'</div></div>';
+ }
+ h+='<div class="g-sec">申请说明</div><div class="g-card g-bio">'+esc(r.reason||'（未填写）')+'</div>'
+ +'<div class="g-sec">申请人</div><div class="g-card g-applicant"><div class="g-avatar">'+esc(r.applicant.charAt(0))+'</div>'
+ +'<div><b>'+esc(r.applicant)+'</b><span>提交于 '+r.date+'</span></div></div>';
+ if(r.evidence) h+='<div class="g-sec">佐证材料</div><div class="g-evcard">'+ic('img',24)+'<span>'+esc(r.evidence)+'</span></div>';
+ if(r.status==='pending'){
+  h+='<div class="g-stickyfoot"><div class="g-pager" style="margin-top:0">'
+   +'<button class="g-btn g-danger-line" data-act="rev-reject">'+ic('x',18)+'驳　回</button>'
+   +'<button class="g-btn g-green" data-act="rev-approve">'+ic('check',18)+'通过并生效</button></div></div>';
+ }else{
+  h+='<div style="height:18px"></div><div class="g-result '+(r.status==='approved'?'g-result-ok':'g-result-no')+'">'+esc(r.result)+'</div>';
+ }
+ h+='</div>';
+ return h;
+};
+
+R.book=function(){
+ return '<div class="g-pad">'
+ +'<div class="g-stats">'+stat(linkedCount(),'页已关联')+stat(totalPages()-linkedCount(),'页未关联')+stat(memLen(),'位族人')+'</div>'
+ +'<div class="g-intro" style="margin-top:14px">绿色为已录入并关联族人的页面。点击任意页码可查看、替换照片或去录入关联。</div>'
+ +VOLS.map(function(v){
+   var ln=v.pages.filter(function(p){ return pageMem(p.n).length; }).length;
+   return '<div class="g-sec">'+esc(v.title)+'<span class="g-secx">'+ln+' / '+v.pages.length+' 页已关联</span></div>'
+    +'<div class="g-pgrid">'+v.pages.map(function(p){
+      var m=pageMem(p.n);
+      return '<button class="g-pcell'+(m.length?' g-on':'')+'" data-act="pcell" data-n="'+p.n+'"><b>'+cnum(p.n)+'</b><span>'+(m.length?m.length+' 人':'未关联')+'</span></button>';
+     }).join('')+'</div>';
+  }).join('')
+ +'</div>';
+};
+
+/* ================= 屏幕表 ================= */
+var SCREENS={
+ home:{t:'谱馆首页',area:'v',root:1,r:R.home},
+ tree:{t:'世系图',area:'v',root:1,r:R.tree},
+ catalog:{t:'原谱阅览',area:'v',root:1,r:R.catalog},
+ directory:{t:'族人名录',area:'v',root:1,r:R.directory},
+ member:{t:'族人详情',area:'v',r:R.member},
+ reader:{t:'原谱翻阅',area:'v',r:R.reader,right:function(){ return '<button class="g-hrbtn" data-act="toc-open">'+ic('menu',17)+'目录</button>'; }},
+ apply:{t:'申请变更',area:'v',r:R.apply,init:function(){ S.evApply=[]; }},
+ login:{t:'管理员登录',area:'a',r:R.login},
+ dashboard:{t:'工作台',area:'a',root:1,r:R.dashboard},
+ capture:{t:'拍照录入',area:'a',root:1,r:R.capture,init:capInit,guard:function(){ return S.capStep>1&&S.capStep<5; }},
+ members:{t:'族人维护',area:'a',root:1,r:R.members},
+ medit:{t:'编辑族人',area:'a',r:R.medit},
+ review:{t:'变更审核',area:'a',root:1,r:R.review},
+ revdetail:{t:'审核详情',area:'a',r:R.revdetail},
+ book:{t:'原谱管理',area:'a',root:1,r:R.book}
+};
+SCREENS.home.right=function(){ return S.loggedIn?'':'<button class="g-hrbtn" data-go="login">'+ic('user',16)+'管理员</button>'; };
+
+/* ================= 导航 ================= */
+function go(id,params,push){
+ var s=SCREENS[id]; if(!s) return;
+ params=params||{};
+ if(push===undefined) push=true;
+ if(s.area==='a'&&!S.loggedIn){ toast('请先登录管理端','warn'); id='login'; s=SCREENS[id]; params={}; }
+ if(id==='reader'&&params&&params.page){ S.readerPage=params.page; delete params.page; }
+ if(push&&S.cur&&S.cur!==id) S.stack.push({id:S.cur,params:S.params});
+ S.cur=id; S.params=params;
+ if(s.init) s.init(params);
+ paint();
+}
+function back(){
+ var prev=S.stack.pop()||{id:S.loggedIn?'dashboard':'home',params:{}};
+ S.cur=prev.id; S.params=prev.params; paint();
+}
+function tabTo(id){
+ var s=SCREENS[id]; if(!s) return;
+ if(s.area==='a'&&!S.loggedIn){ S.stack=[]; S.cur='login'; S.params={}; paint(); return; }
+ if(S.cur!==id&&S.cur==='capture'&&SCREENS.capture.guard&&SCREENS.capture.guard()){
+  confirmSheet('录入尚未完成','切换页面将丢弃本页已填的内容，确定退出吗？','确定退出','g-danger-line',function(){
+   S.capStep=1; tabTo(id);
+  });
+  return;
+ }
+ S.stack=[]; S.cur=id; S.params={};
+ if(s.init) s.init({});
+ paint();
+}
+var ACTIVE_MAP={member:'directory',reader:'catalog',revdetail:'review',medit:'members',apply:'home',login:'home'};
+function paint(){
+ var s=SCREENS[S.cur]; if(!s) return;
+ var app=$('#gz-proto');
+ app.classList.remove('g-fs1','g-fs2');
+ if(S.fs==='1') app.classList.add('g-fs1');
+ if(S.fs==='2') app.classList.add('g-fs2');
+ var title=s.t;
+ if(S.cur==='member'&&byId(S.params.id)) title=byId(S.params.id).name+' · '+genLabel(byId(S.params.id).gen);
+ if(S.cur==='medit') title=S.params.id?'编辑族人':'新增族人';
+ if(S.cur==='reader'&&pageMeta(S.readerPage)) title=pageMeta(S.readerPage).vol.title;
+ $('#gz-head').innerHTML=(s.root?'':'<button class="g-hback" data-act="back">'+ic('back',19)+'返回</button>')
+  +'<div class="g-htitle">'+esc(title)+'</div>'
+  +'<div class="g-hright">'+(s.right?s.right():'')+'</div>';
+ var b=$('#gz-body');
+ b.innerHTML=s.r(S.params);
+ b.scrollTop=0;
+ if(S.cur==='tree'){ var tw=document.getElementById('gz-treewrap'); if(tw) tw.scrollLeft=Math.max(0,(tw.scrollWidth-tw.clientWidth)/2); }
+ var adminArea=s.area==='a'&&S.loggedIn;
+ $('#gz-tabs-v').classList.toggle('g-hidden',adminArea);
+ $('#gz-tabs-a').classList.toggle('g-hidden',!adminArea);
+ var actRoot=ACTIVE_MAP[S.cur]||S.cur;
+ $$('#gz-tabs-v .g-tab,#gz-tabs-a .g-tab').forEach(function(t){ t.classList.toggle('g-on',t.dataset.tab===actRoot); });
+ var bd=$('#gz-revbadge');
+ if(bd){ var pc=pendCount(); bd.textContent=pc; bd.style.display=pc?'':'none'; }
+ $('#gz-clock').textContent=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',hour12:false});
+ closeNav(); closeToc(); closeSheet();
+}
+
+/* ---- 底部导航 ---- */
+function tbtn(id,t,icn,badge){
+ return '<button class="g-tab" data-tab="'+id+'">'+ic(icn,21)+'<span>'+t+'</span>'
+  +(badge?'<i class="g-badge" id="gz-revbadge">'+pendCount()+'</i>':'')+'</button>';
+}
+$('#gz-tabs-v').innerHTML=
+ tbtn('home','首页','home')+tbtn('tree','世系图','tree')+tbtn('catalog','原谱','book')+tbtn('directory','名录','users');
+$('#gz-tabs-a').innerHTML=
+ tbtn('dashboard','工作台','home')+tbtn('capture','录入','camera')+tbtn('members','族人','users')+tbtn('review','审核','clip',true)+tbtn('book','原谱','layers');
+$('#gz-fab').innerHTML=ic('menu',15)+'页面';
+
+/* ================= 翻书 ================= */
+function flip(dir){
+ if(S.anim) return;
+ var total=totalPages(), np=S.readerPage+(dir==='next'?1:-1);
+ if(np<1||np>total){ toast(dir==='next'?'已经是最后一页了':'已经是第一页了','warn'); return; }
+ var cur=$('#gz-pagec');
+ if(!cur||REDUCED){ S.readerPage=np; paint(); return; }
+ S.anim=true;
+ var oldHTML=cur.innerHTML, newHTML=simPage(np);
+ var clone=document.createElement('div'); clone.className='g-flip';
+ if(dir==='next'){ clone.innerHTML=oldHTML; cur.innerHTML=newHTML; }
+ else{ clone.innerHTML=newHTML; }
+ cur.parentNode.appendChild(clone);
+ var kf=dir==='next'
+  ?[{transform:'rotateY(0deg)',opacity:1},{transform:'rotateY(-108deg)',opacity:.15}]
+  :[{transform:'rotateY(-108deg)',opacity:.15},{transform:'rotateY(0deg)',opacity:1}];
+ var anim=clone.animate(kf,{duration:dir==='next'?330:300,easing:dir==='next'?'ease-in':'ease-out'});
+ anim.onfinish=function(){
+  clone.remove();
+  if(dir!=='next') cur.innerHTML=newHTML;
+  S.anim=false; S.readerPage=np; paint();
+ };
+ S.readerPage=np;
+}
+var touchX=null;
+document.addEventListener('touchstart',function(e){
+ if(e.target.closest&&e.target.closest('#gz-book')) touchX=e.touches[0].clientX;
+},{passive:true});
+document.addEventListener('touchend',function(e){
+ if(touchX!=null&&e.target.closest&&e.target.closest('#gz-book')){
+  var dx=e.changedTouches[0].clientX-touchX;
+  if(dx<-40) flip('next'); else if(dx>40) flip('prev');
+ }
+ touchX=null;
+},{passive:true});
+
+/* ---- 目录抽屉 ---- */
+function openToc(){
+ var el=$('#gz-toc'), h='<div class="g-tocbg" data-act="toc-close"></div><div class="g-tocp">'
+  +'<div class="g-shtitle">谱书目录<button class="g-shx" data-act="toc-close">'+ic('x',20)+'</button></div>';
+ VOLS.forEach(function(v){
+  h+='<div class="g-tocv">'+esc(v.title)+'</div>';
+  v.pages.forEach(function(p){
+   var m=pageMem(p.n);
+   h+='<div class="g-tocp-item'+(p.n===S.readerPage?' g-cur':'')+'" data-go="reader" data-page="'+p.n+'">'
+    +'<i class="g-tdot'+(m.length?' g-on':'')+(p.n===S.readerPage?' g-cur':'')+'"></i>'
+    +'<span style="width:34px">'+cnum(p.n)+'</span><span class="g-toct">'+esc(p.t)+'</span>'
+    +(m.length?'<span class="g-tocn">'+m.length+' 人</span>':'')+'</div>';
+  });
+ });
+ el.innerHTML=h+'</div>';
+ el.classList.add('g-show');
+}
+function closeToc(){ var el=$('#gz-toc'); el.classList.remove('g-show'); }
+
+/* ================= 弹层 ================= */
+var SHEET_ACTS=[];
+function openSheet(o){
+ var el=$('#gz-sheet');
+ el.innerHTML='<div class="g-mbg" data-act="sheet-close"></div><div class="g-mpanel">'
+  +'<div class="g-shtitle">'+esc(o.title)+'<button class="g-shx" data-act="sheet-close">'+ic('x',20)+'</button></div>'
+  +'<div class="g-shbody">'+o.html+'</div>'
+  +'<div class="g-shacts">'+o.acts.map(function(a,i){
+    return '<button class="g-btn '+(a.cls||'')+'" data-act="sheet-act" data-k="'+i+'">'+esc(a.t)+'</button>';
+  }).join('')+'</div></div>';
+ el.classList.add('g-show');
+ SHEET_ACTS=o.acts||[];
+}
+function closeSheet(){ var el=$('#gz-sheet'); el.classList.remove('g-show'); el.innerHTML=''; SHEET_ACTS=[]; }
+function confirmSheet(title,text,okT,okCls,fn){
+ openSheet({title:title,html:'<p class="g-shtext">'+text+'</p>',acts:[
+  {t:'取消',cls:'g-line'},
+  {t:okT,cls:okCls||'',fn:fn}
+ ]});
+}
+
+/* ================= 提醒 ================= */
+var toastTimer=null;
+function toast(msg,type){
+ var el=$('#gz-toast');
+ el.innerHTML=ic(type==='warn'?'alert':'check',18)+'<span>'+esc(msg)+'</span>';
+ el.classList.toggle('g-warn',type==='warn');
+ el.classList.add('g-show');
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(function(){ el.classList.remove('g-show'); },2400);
+}
+
+/* ================= 录入向导 ================= */
+function capInit(p){
+ if(p&&p.page){
+  S.cap={photo:'example',img:null,vol:pageMeta(p.page).vol.id,page:p.page,f:{gen:4},ocr:true,done:false};
+  S.capStep=2;
+  toast('已带入原谱第 '+p.page+' 页');
+ }else if(!S.cap||S.cap.done){
+  S.cap={photo:null,img:null,vol:'v2',page:nextUnlinked('v2'),f:{gen:4},ocr:false,done:false};
+  S.capStep=1;
+ }
+}
+function capReadFields(){
+ var cap=S.cap;
+ cap.f.name=($('#gz-cn')||{}).value!==undefined?$('#gz-cn').value.trim():cap.f.name;
+ if($('#gz-cg')) cap.f.gen=+$('#gz-cg').value;
+ if($('#gz-cz')) cap.f.zi=$('#gz-cz').value.trim();
+ if($('#gz-cf')) cap.f.father=$('#gz-cf').value;
+ if($('#gz-cb')) cap.f.birth=$('#gz-cb').value.trim();
+ if($('#gz-cd')) cap.f.death=$('#gz-cd').value.trim();
+ if($('#gz-cs')) cap.f.spouse=$('#gz-cs').value.trim();
+ if($('#gz-ci')) cap.f.intro=$('#gz-ci').value.trim();
+}
+
+/* ================= 动作表 ================= */
+var ACT={
+ 'back':function(){
+  var s=SCREENS[S.cur];
+  if(s&&s.guard&&s.guard()){
+   confirmSheet('录入尚未完成','退出后将丢弃本页已填的内容，确定退出吗？','确定退出','g-danger-line',function(){ S.capStep=1; back(); });
+  }else back();
+ },
+ 'sheet-close':function(){ closeSheet(); },
+ 'sheet-act':function(el){
+  var a=SHEET_ACTS[+el.dataset.k];
+  var keep=false;
+  if(a&&a.fn) keep=(a.fn()===false);
+  if(!keep) closeSheet();
+ },
+ 'proto-toggle':function(){ S.navOpen=!S.navOpen; if(S.navOpen) renderNav(); $('#gz-nav').classList.toggle('g-show',S.navOpen); },
+ 'fs':function(el){ S.fs=el.dataset.v; store.set('gz_fs',S.fs); paint(); toast('字号已切换为「'+['标准','大字','特大'][+S.fs]+'」'); },
+ 'zoom':function(el){
+  S.zoom=Math.min(1.45,Math.max(0.6,S.zoom+(el.dataset.v==='+'?0.15:-0.15)));
+  var t=$('#gz-tree'); if(t){ t.style.transform='scale('+S.zoom+')'; t.style.transformOrigin='top center'; }
+ },
+ 'toc-open':function(){ openToc(); },
+ 'toc-close':function(){ closeToc(); },
+ 'booktap':function(el,e){
+  if(e.target.closest('.g-lk')) return;
+  var r=el.getBoundingClientRect();
+  if(!e.clientX&&!e.changedTouches) return;
+  var x=(e.clientX||0)-r.left;
+  flip(x<r.width/2?'prev':'next');
+ },
+ 'flip':function(el){ flip(el.dataset.v); },
+ 'cap-this':function(){
+  go('capture',{page:S.readerPage});
+ },
+ 'login':function(){
+  var u=$('#gz-lu'),p=$('#gz-lp');
+  if(!u.value.trim()||!p.value.trim()){ toast('请输入账号和密码','warn'); return; }
+  S.loggedIn=true; store.set('gz_auth',true);
+  toast('登录成功，欢迎回来');
+  S.stack=[]; S.cur='dashboard'; S.params={}; paint();
+ },
+ 'login-back':function(){ S.stack=[]; S.cur='home'; S.params={}; paint(); },
+ 'logout':function(){
+  confirmSheet('退出登录','退出后将返回访客浏览端，管理功能不可用。','退出登录','g-danger-line',function(){
+   S.loggedIn=false; store.set('gz_auth',false); S.stack=[]; S.cur='home'; S.params={}; paint(); toast('已退出登录');
+  });
+ },
+ 'apply-for':function(el){ go('apply',{type:'修改信息',target:el.dataset.id}); },
+ 'ev-add-apply':function(){ var f=$('#gz-file2'); f.dataset.for='apply'; f.click(); },
+ 'ev-del-apply':function(el){ S.evApply.splice(+el.dataset.i,1); paint(); },
+ 'apply-submit':function(){
+  var desc=$('#gz-adesc');
+  var fw=$('#gz-af');
+  if(!desc.value.trim()){
+   fw.classList.add('g-invalid'); desc.focus();
+   toast('请先填写变更内容','warn'); return;
+  }
+  fw.classList.remove('g-invalid');
+  var t=S.params.target?byId(S.params.target):null;
+  openSheet({title:'确认提交申请？',
+   html:'<p class="g-shtext">提交后由谱馆管理员审核，审核期间现有资料保持不变。</p>'
+    +(t?'<p class="g-shtext">变更对象：<b style="color:var(--red2)">'+esc(t.name)+'</b></p>':''),
+   acts:[{t:'再看看',cls:'g-line'},{t:'确认提交',fn:doApplySubmit}]});
+ },
+ 'cap-pick':function(){ var f=$('#gz-file'); f.dataset.for='cap'; f.click(); },
+ 'cap-example':function(){ S.cap.photo='example'; paint(); toast('已载入示例谱页'); },
+ 'vol':function(el){ S.cap.vol=el.dataset.id; S.cap.page=nextUnlinked(S.cap.vol); paint(); },
+ 'page-dn':function(){ S.cap.page=Math.max(1,S.cap.page-1); paint(); },
+ 'page-up':function(){ S.cap.page=Math.min(totalPages(),S.cap.page+1); paint(); },
+ 'cap-next':function(){
+  var cap=S.cap;
+  if(S.capStep===1){
+   if(!cap.img&&cap.photo!=='example'){ toast('请先拍摄谱页，或使用示例谱页','warn'); return; }
+   S.capStep=2; paint();
+  }else if(S.capStep===2){
+   S.capStep=3;
+   if(cap.photo==='example'&&!cap.f.name){
+    cap.f={name:'王承烈',zi:'毅庵',gen:4,father:'m6',birth:'明成化二十年（1484）',death:'',spouse:'周氏',intro:''};
+    cap.ocr=true;
+   }
+   paint();
+  }else if(S.capStep===3){
+   capReadFields();
+   if(!cap.f.name){
+    var fw=$('#gz-cnf'); if(fw) fw.classList.add('g-invalid');
+    toast('请填写族人姓名','warn'); return;
+   }
+   S.capStep=4; paint();
+  }
+ },
+ 'cap-back':function(){ if(S.capStep>1){ S.capStep--; paint(); } },
+ 'cap-finish':function(){
+  capReadFields();
+  if(!S.cap.f.name){ toast('请填写族人姓名','warn'); S.capStep=3; paint(); return; }
+  confirmSheet('确认完成录入？','完成后将创建族人「'+esc(S.cap.f.name)+'」，并与原谱第 '+S.cap.page+' 页建立关联。','确认完成','g-green',doCapFinish);
+ },
+ 'cap-again':function(){
+  S.cap=null; S.capStep=1; capInit({}); paint(); toast('已定位到下一待录入页');
+ },
+ 'done-dash':function(){ S.stack=[]; S.cur='dashboard'; S.params={}; paint(); },
+ 'done-back':function(){ back(); },
+ 'done-home':function(){ S.stack=[]; S.cur='home'; S.params={}; paint(); },
+ 'medit-save':function(){
+  var name=$('#gz-en');
+  if(!name.value.trim()){ name.closest('.g-field').classList.add('g-invalid'); toast('请填写姓名','warn'); return; }
+  confirmSheet('保存修改？','保存后访客端立即看到最新资料。','确认保存','g-green',function(){
+   var v={name:name.value.trim(),gen:+$('#gz-eg').value,zi:$('#gz-ez').value.trim(),hao:$('#gz-eh').value.trim(),
+    birth:$('#gz-eb').value.trim(),death:$('#gz-ed').value.trim(),father:$('#gz-ef').value,
+    spouse:$('#gz-es').value.trim(),intro:$('#gz-ei').value.trim()};
+   if(S.params.id){
+    var m=byId(S.params.id);
+    if(m){ for(var k in v) m[k]=v[k]; }
+    toast('已保存修改');
+   }else{
+    var nm={id:'n'+Date.now(),pages:[]};
+    MEMBERS.push(nm);
+    for(var k2 in v) nm[k2]=v[k2];
+    toast('新增族人成功');
+   }
+   save(); back();
+  });
+ },
+ 'revtab':function(el){ S.revTab=el.dataset.v; paint(); },
+ 'rev-approve':function(){
+  var r=null; REQS.forEach(function(x){ if(x.id===S.params.id) r=x; });
+  if(!r) return;
+  confirmSheet('确认通过该申请？','通过后族人信息将立即更新，并向申请人展示处理结果。','确认通过','g-green',function(){
+   applyReq(r,'approved','已通过，'+today()+' 生效');
+  });
+ },
+ 'rev-reject':function(){
+  var r=null; REQS.forEach(function(x){ if(x.id===S.params.id) r=x; });
+  if(!r) return;
+  openSheet({title:'驳回申请',
+   html:'<p class="g-shtext">请填写驳回理由，将反馈给申请人：</p><textarea class="g-textarea" id="gz-rj" style="min-height:84px" placeholder="如：所引资料与原谱不符…"></textarea>',
+   acts:[{t:'取消',cls:'g-line'},{t:'确认驳回',cls:'g-danger-line',fn:function(){
+    var rs=$('#gz-rj').value.trim();
+    if(!rs){ toast('请填写驳回理由','warn'); return false; }
+    applyReq(r,'rejected','驳回：'+rs);
+   }}]});
+ },
+ 'pcell':function(el){ openPageSheet(+el.dataset.n); },
+ 'book-replace':function(){ toast('原型演示：此处将调起相机拍摄替换照片'); },
+ 'nav-visitor':function(){ S.loggedIn=false; store.set('gz_auth',false); S.stack=[]; S.navOpen=false; S.cur='home'; S.params={}; paint(); toast('已切换为访客视角'); },
+ 'nav-admin':function(){ S.loggedIn=true; store.set('gz_auth',true); S.stack=[]; S.navOpen=false; S.cur='dashboard'; S.params={}; paint(); toast('已进入管理员视角'); },
+ 'nav-fs':function(){ S.fs=S.fs==='2'?'0':String(+S.fs+1); store.set('gz_fs',S.fs); paint(); toast('字号：'+['标准','大字','特大'][+S.fs]); },
+ 'nav-reset':function(){
+  store.del('gz_db'); store.del('gz_auth'); store.del('gz_fs');
+  reseed(); DB=store.get('gz_db',null); MEMBERS=DB.members; REQS=DB.reqs;
+  S.loggedIn=false; S.fs='0'; S.stack=[]; S.navOpen=false; S.cap=null; S.capStep=1; S.evApply=[]; S.readerPage=1;
+  S.cur='home'; S.params={}; paint(); toast('已重置演示数据');
+ }
+};
+
+function doApplySubmit(){
+ var desc=$('#gz-adesc').value.trim();
+ REQS.unshift({
+  id:'w'+Date.now(), type:radioVal('gz-appt')||'修改信息', target:S.params.target||'',
+  applicant:($('#gz-aapp').value.trim()||'匿名访客'), date:today(), status:'pending',
+  apply:{}, diff:[], evidence:S.evApply.length?S.evApply.length+' 张佐证图片':'', reason:desc
+ });
+ save();
+ $('#gz-body').innerHTML='<div class="g-done"><div class="g-doneseal">'+ic('check',42)+'</div>'
+  +'<h2>申请已提交</h2><p>申请编号 W-'+Date.now().toString().slice(-6)+'<br>管理员将在 7 日内完成审核，<br>处理结果不影响现有资料</p>'
+  +'<button class="g-btn" data-act="done-home">返回首页</button>'
+  +'<div style="height:10px"></div>'
+  +'<button class="g-btn g-line" data-act="done-back">返回上一页</button></div>';
+ toast('提交成功，感谢您的贡献');
+}
+function radioVal(name){
+ var el=document.querySelector('input[name="'+name+'"]:checked');
+ return el?el.value:'';
+}
+function doCapFinish(){
+ var cap=S.cap, f=cap.f;
+ var nm={id:'n'+Date.now(),name:f.name,zi:f.zi||'',hao:'',gen:f.gen||4,birth:f.birth||'',death:f.death||'',
+  father:f.father||'',spouse:f.spouse||'',intro:f.intro||'',pages:[cap.page]};
+ MEMBERS.push(nm);
+ $$('#gz-body input[data-lid]').forEach(function(c){
+  if(c.checked){ var m=byId(c.dataset.lid); if(m&&!m.pages.includes(cap.page)) m.pages.push(cap.page); }
+ });
+ save();
+ S.cap.done=true; S.capStep=5;
+ paint();
+ toast('录入成功');
+}
+function applyReq(r,status,result){
+ if(status==='approved'){
+  var a=r.apply;
+  if(a.kind==='field'&&r.target&&byId(r.target)){ byId(r.target)[a.field]=a.value; }
+  else if(a.kind==='add'&&a.member){ var nm={}; for(var k in a.member) nm[k]=a.member[k]; nm.id='n'+Date.now(); MEMBERS.push(nm); }
+  else if(a.kind==='page'&&byId(a.member)){
+   var m=byId(a.member); m.pages=(m.pages||[]).filter(function(n){ return n!==a.from; });
+   if(m.pages.indexOf(a.to)<0) m.pages.push(a.to);
+  }
+ }
+ r.status=status; r.result=result; save();
+ toast(status==='approved'?'已通过，族人信息已更新':'已驳回并反馈申请人');
+ back();
+}
+function openPageSheet(n){
+ var meta=pageMeta(n), mem=pageMem(n);
+ var h='<p class="g-shtext">状态：'+(mem.length?'已录入 · 关联 '+mem.length+' 位族人':'已拍摄 · 未录入关联')+'</p>'
+  +(mem.length?'<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">'+mem.map(chip).join('')+'</div>':'');
+ var acts=[{t:'查看原谱页',fn:function(){ go('reader',{page:n}); }}];
+ if(mem.length) acts.push({t:'替换照片',cls:'g-line',fn:function(){ toast('原型演示：此处将调起相机拍摄替换'); }});
+ else acts.push({t:'去录入关联',cls:'g-green',fn:function(){ go('capture',{page:n}); }});
+ openSheet({title:'第 '+cnum(n)+' 页 · '+esc(meta.p.t),html:h,acts:acts});
+}
+
+/* ================= 原型导航面板 ================= */
+function renderNav(){
+ var groups=[['访客端',[['home','谱馆首页'],['tree','世系图'],['catalog','原谱目录'],['directory','族人名录'],['member','族人详情（示例）'],['reader','原谱翻书阅览'],['apply','变更申请表单']]],
+  ['管理端',[['login','管理员登录'],['dashboard','管理工作台'],['capture','拍照录入向导'],['members','族人维护'],['review','变更审核列表'],['revdetail','审核详情（示例）'],['book','原谱管理']]]];
+ var h='<div class="g-nv-t">原型页面导航</div>';
+ groups.forEach(function(g){
+  h+='<div class="g-nv-t">'+g[0]+'</div>';
+  g[1].forEach(function(it){
+   h+='<button class="g-nv-i'+(S.cur===it[0]?' g-cur':'')+'" data-nav="'+it[0]+'">'+(S.cur===it[0]?'▸ ':'')+it[1]+'</button>';
+  });
+ });
+ h+='<div class="g-nv-row"><button class="g-nv-btn" data-act="nav-visitor">访客视角</button><button class="g-nv-btn" data-act="nav-admin">管理员视角</button></div>'
+  +'<div class="g-nv-row"><button class="g-nv-btn" data-act="nav-fs">切换字号</button><button class="g-nv-btn" data-act="nav-reset">重置演示</button></div>';
+ $('#gz-nav').innerHTML=h;
+}
+function navGo(id){
+ var p={};
+ if(id==='member') p={id:'m7'};
+ if(id==='revdetail') p={id:'r1'};
+ if(id==='medit') p={id:'m7'};
+ S.navOpen=false; $('#gz-nav').classList.remove('g-show');
+ go(id,p);
+}
+function closeNav(){ S.navOpen=false; $('#gz-nav').classList.remove('g-show'); }
+
+/* ================= 事件委托 ================= */
+document.addEventListener('click',function(e){
+ var t=e.target;
+ var tabEl=t.closest('[data-tab]');
+ if(tabEl){ tabTo(tabEl.dataset.tab); return; }
+ var navEl=t.closest('[data-nav]');
+ if(navEl){ navGo(navEl.dataset.nav); return; }
+ var goEl=t.closest('[data-go]');
+ if(goEl){
+  var to=goEl.dataset.go;
+  closeSheet(); closeToc(); closeNav();
+  if(to==='member') go('member',{id:goEl.dataset.id});
+  else if(to==='reader') go('reader',{page:+goEl.dataset.page});
+  else if(to==='medit') go('medit',{id:goEl.dataset.id||''});
+  else if(to==='revdetail') go('revdetail',{id:goEl.dataset.id});
+  else go(to);
+  return;
+ }
+ var actEl=t.closest('[data-act]');
+ if(actEl){
+  var fn=ACT[actEl.dataset.act];
+  if(fn) fn(actEl,e);
+  return;
+ }
+ if(t.id==='gz-nav'||(t.closest&&t.closest('#gz-nav')&&!t.closest('[data-nav],[data-act]'))) return;
+ if(S.navOpen&&!t.closest('#gz-nav')&&!t.closest('#gz-fab')){ closeNav(); }
+});
+document.addEventListener('change',function(e){
+ var t=e.target;
+ if(t.name==='gz-appt'){
+  $$('input[name="gz-appt"]').forEach(function(i){ i.closest('.g-rcard').classList.toggle('g-on',i.checked); });
+ }
+ if(t.dataset&&t.dataset.lid){ t.closest('.g-check').classList.toggle('g-on',t.checked); }
+});
+document.addEventListener('input',function(e){
+ if(e.target.id==='gz-dq'){ S.dirQ=e.target.value; var d=$('#gz-dlist'); if(d) d.innerHTML=dirList(); }
+ if(e.target.id==='gz-mq'){ S.mQ=e.target.value; var l=$('#gz-mlist'); if(l) l.innerHTML=memberList(); }
+});
+function bindFile(id,handler){
+ $(id).addEventListener('change',function(e){
+  var f=e.target.files&&e.target.files[0]; if(!f) return;
+  var rd=new FileReader();
+  rd.onload=function(ev){ handler(ev.target.result); };
+  rd.readAsDataURL(f);
+  e.target.value='';
+ });
+}
+bindFile('#gz-file',function(url){ S.cap.img=url; S.cap.photo='file'; paint(); toast('照片已添加，可进入下一步'); });
+bindFile('#gz-file2',function(url){
+ if(S.evApply.length>=2){ toast('最多上传 2 张佐证图片','warn'); return; }
+ S.evApply.push(url); paint(); toast('图片已添加');
+});
+
+/* ================= 启动 ================= */
+go(S.loggedIn?'dashboard':'home',{},false);
+})();
+</script>
+</body>
+</html>

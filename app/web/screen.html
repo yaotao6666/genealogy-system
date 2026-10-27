@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>智慧族谱 · 大屏驾驶舱</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%239c3a32'/><text x='16' y='23' font-size='17' text-anchor='middle' fill='white' font-family='serif'>谱</text></svg>">
+<link rel="stylesheet" href="screen.css">
+</head>
+<body>
+<header class="hd">
+  <div class="hd-left">
+    <div class="seal">王氏<br>宗谱</div>
+    <div>
+      <h1>太原堂王氏 · 谱馆驾驶舱</h1>
+      <div class="hd-sub">唐咸通肇基 · 三十世一脉 · <span id="hd-span">—</span></div>
+    </div>
+  </div>
+  <div class="hd-stats" id="hd-stats"></div>
+  <div class="hd-right">
+    <button class="hbtn" id="btn-intro">谱馆介绍</button>
+    <a class="hbtn" href="/" >返回浏览端</a>
+    <div class="clock"><b id="clk">--:--</b><span id="clk-date"></span></div>
+  </div>
+</header>
+
+<main class="grid">
+  <!-- 左列 -->
+  <section class="col">
+    <div class="panel">
+      <h3><i></i>朝代分布 <span class="sub">按出生年</span></h3>
+      <div id="p-dyn" class="dyn"></div>
+    </div>
+    <div class="panel">
+      <h3><i></i>世代人口 <span class="sub">点击查看该世明细</span></h3>
+      <div id="p-gen"></div>
+    </div>
+    <div class="panel">
+      <h3><i></i>主要支系 <span class="sub">始祖直系 · 按后嗣数</span></h3>
+      <div id="p-branch"></div>
+    </div>
+  </section>
+
+  <!-- 中列：世系树 -->
+  <section class="col mid">
+    <div class="panel tree-panel">
+      <div class="tree-bar">
+        <h3><i></i>世系互动树</h3>
+        <div class="tree-tools">
+          <div class="searchbox">
+            <input id="tree-q" type="search" placeholder="搜索族人，查看明细…" aria-label="搜索族人">
+            <div id="tree-qres" class="qres" hidden></div>
+          </div>
+          <label class="depthlab">展开至
+            <input id="tree-depth" type="range" min="1" max="6" value="3" step="1" aria-label="展开代数">
+            <b id="tree-depth-v">3 世</b>
+          </label>
+          <button class="tbtn" id="btn-collapse">全部折叠</button>
+          <button class="tbtn" id="btn-root0" hidden>回到始祖</button>
+        </div>
+      </div>
+      <div class="tree-scroll" id="tree-scroll">
+        <div class="tree" id="tree"></div>
+      </div>
+      <div class="tree-foot">点击人名查看明细 · 「▾N子」展开 / 收起支系 · 滑杆折叠层级代数 · 支系面板可重定位树根</div>
+    </div>
+  </section>
+
+  <!-- 右列 -->
+  <section class="col">
+    <div class="panel detail-panel">
+      <h3><i></i><span id="d-title">族人明细</span> <button class="tbtn" id="d-back" hidden>‹ 返回列表</button></h3>
+      <div id="p-detail"><div class="hint">在世系树中点击任意族人，或搜索后选择，即可在此查看明细。</div></div>
+    </div>
+    <div class="panel">
+      <h3><i></i>录入与协作进度</h3>
+      <div id="p-progress"></div>
+    </div>
+    <div class="panel">
+      <h3><i></i>谱馆简介</h3>
+      <div class="about">
+        <p>太原堂王氏，唐末避乱自太原南迁桐川，垦荒立业，聚族而居。谱馆将光绪老谱逐页拍摄归档，已完成结构化录入并与原谱页双向关联。</p>
+        <p>族人访客可自由浏览世系、翻阅原谱，并可提交变更申请，由谱馆管理员核对后生效。</p>
+        <button class="tbtn wide" id="btn-intro2">阅读完整介绍</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- 介绍浮层（首屏展示，可关闭后再从右上角打开） -->
+<div class="modal" id="intro">
+  <div class="modal-card">
+    <div class="seal big">王氏<br>宗谱</div>
+    <h2>智慧族谱 · 谱馆介绍</h2>
+    <div class="intro-body">
+      <p><b>谱馆缘起</b>　太原堂王氏，唐咸通年间始迁祖王德明公自太原府避乱南迁，卜居桐川之阳，耕读传家，绵延三十世。光绪老谱一套十二卷，历经风雨，纸页脆黄。</p>
+      <p><b>智慧谱馆</b>　本馆将纸质族谱逐页拍照归档，通过拍照识别（OCR）辅助录入结构化数据，实现「原谱页 ⇄ 族人信息」双向关联：在世系树中点击任意族人，即可查其明细并直达其所载原谱页；翻阅原谱时，亦可点看该页收录的族人。</p>
+      <p><b>众擎共修</b>　族人访客无需登录即可浏览全部内容；发现讹误或缺漏，可在族人详情页提交变更申请，由谱馆管理员核对后生效，确保谱牒信实。</p>
+      <p><b>驾驶舱用法</b>　中间为可折叠世系树：拖动「展开至 N 世」滑杆按代数折叠层级，点「▾N子」逐支展开，点支系排名可重定位树根；点击人名在右侧查看明细；左侧图表点击柱形可查看该世族人名录。</p>
+      <p class="fine">演示环境：数据由生成器构造（30 代 20000 人），管理员账号 admin / admin123；识别引擎为可插拔演示实现，生产环境可接入真实 OCR / 视觉大模型。</p>
+    </div>
+    <button class="tbtn primary" id="intro-close">开始探索</button>
+  </div>
+</div>
+
+<script src="screen.js"></script>
+</body>
+</html>
